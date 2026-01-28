@@ -61,6 +61,14 @@ class UserConfig {
         didSet { UserDefaults.standard.set(collapseDictionaries, forKey: "collapseDictionaries") }
     }
     
+    var enableSync: Bool {
+        didSet { UserDefaults.standard.set(enableSync, forKey: "enableSync") }
+    }
+    
+    var googleClientId: String {
+        didSet { UserDefaults.standard.set(googleClientId, forKey: "googleClientId") }
+    }
+    
     init() {
         let defaults = UserDefaults.standard
         
@@ -71,6 +79,9 @@ class UserConfig {
         self.popupHeight = defaults.object(forKey: "popupHeight") as? Int ?? 250
         self.maxResults = defaults.object(forKey: "maxResults") as? Int ?? 16
         self.collapseDictionaries = defaults.object(forKey: "collapseDictionaries") as? Bool ?? true
+        
+        self.enableSync = defaults.object(forKey: "enableSync") as? Bool ?? false
+        self.googleClientId = defaults.object(forKey: "googleClientId") as? String ?? ""
         
         self.bookshelfSortOption = defaults.string(forKey: "bookshelfSortOption")
             .flatMap(SortOption.init) ?? .recent

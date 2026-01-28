@@ -99,25 +99,7 @@ struct DictionaryView: View {
         }
         .overlay {
             if dictionaryManager.isImporting {
-                ZStack {
-                    Color.black.opacity(0.2)
-                        .ignoresSafeArea()
-                    if #available(iOS 26, *) {
-                        VStack(spacing: 12) {
-                            ProgressView()
-                            Text("Importing...")
-                        }
-                        .padding(24)
-                        .glassEffect()
-                    } else {
-                        VStack(spacing: 12) {
-                            ProgressView()
-                            Text("Importing...")
-                        }
-                        .padding(24)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                    }
-                }
+                LoadingOverlay("Importing...")
             }
         }
         .navigationTitle("Dictionaries")

@@ -41,6 +41,7 @@ struct Bookmark: Codable {
     let chapterIndex: Int
     let progress: Double
     let characterCount: Int
+    var lastModified: Date?
 }
 
 struct BookInfo: Codable {
@@ -48,6 +49,7 @@ struct BookInfo: Codable {
     let chapterInfo: [String: ChapterInfo]
     
     struct ChapterInfo: Codable {
+        let spineIndex: Int?
         let currentTotal: Int
         let chapterCount: Int
     }

@@ -92,7 +92,7 @@ struct VerticalWebView: UIViewRepresentable {
         init(_ parent: VerticalWebView) {
             self.parent = parent
         }
-
+        
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             guard message.name == "textSelected",
                   let body = message.body as? [String: Any] else {
@@ -166,7 +166,7 @@ struct VerticalWebView: UIViewRepresentable {
                 -webkit-column-break-inside: avoid !important;
             }
             ::highlight(hoshi-selection) {
-                background-color: rgba(160, 160, 160, 0.4);
+                background-color: rgba(160, 160, 160, 0.4) !important;
                 color: inherit;
             }
             @media (prefers-color-scheme: light) { html, body { background-color: #fff !important; color: #000 !important; } }
@@ -201,7 +201,18 @@ struct VerticalWebView: UIViewRepresentable {
                     document.body.appendChild(spacer);
                 }
                 \(readerJS)
-            
+
+                // wrap text not in spans inside ruby elements in spans to fix highlighting
+                document.querySelectorAll('ruby').forEach(ruby => {
+                    ruby.childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                            const span = document.createElement('span');
+                            span.textContent = node.textContent;
+                            node.replaceWith(span);
+                        }
+                    });
+                });
+
                 // apply style to big images only, some epubs have inline pictures as "text"
                 var images = document.querySelectorAll('img');
                 var imagePromises = Array.from(images).map(img => {
@@ -225,11 +236,7 @@ struct VerticalWebView: UIViewRepresentable {
                 
                 // wait for all images to load before scrolling to bookmark
                 Promise.all(imagePromises).then(() => {
-                    var pageHeight = \(Int(self.parent.viewSize.height));
-                    var maxScroll = (\(parent.userConfig.verticalPadding) === 0) ? document.body.scrollHeight : document.body.scrollHeight - pageHeight;
-                    var raw = maxScroll * \(self.parent.currentProgress);
-                    var targetScroll = Math.floor(raw / pageHeight) * pageHeight;
-                    window.scrollTo(0, targetScroll);
+                    window.hoshiReader.restoreProgress(\(self.parent.currentProgress));
                 });
             })();
             """
@@ -326,18 +333,7 @@ struct VerticalWebView: UIViewRepresentable {
                 return
             }
             
-            let script = """
-            (function() {
-                var scrollPos = window.scrollY;
-                var pageHeight = \(Int(self.parent.viewSize.height));
-                var maxScroll = (\(parent.userConfig.verticalPadding) === 0) ? document.body.scrollHeight : document.body.scrollHeight - pageHeight;
-            
-                if (maxScroll <= 0) {
-                    return 0;
-                }
-                return scrollPos / maxScroll;
-            })()
-            """
+            let script = "window.hoshiReader.calculateProgress()"
             
             webView.evaluateJavaScript(script) { (result, _) in
                 if let progress = result as? Double {

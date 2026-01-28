@@ -22,8 +22,12 @@ extension String {
         text = text.replacingOccurrences(of: "&amp;", with: "&")
         text = text.replacingOccurrences(of: "&lt;", with: "<")
         text = text.replacingOccurrences(of: "&gt;", with: ">")
-        text = text.replacingOccurrences(of: "[。、！？…‥「」『』（）()【】〈〉《》〔〕｛｝{}［］\\[\\]・：；:;，,.─—]", with: "", options: .regularExpression)
-        return text.components(separatedBy: .whitespacesAndNewlines).joined().count
+        text = text.replacingOccurrences(
+            of: "[^0-9A-Za-z○◯々-〇〻ぁ-ゖゝ-ゞァ-ヺー０-９Ａ-Ｚａ-ｚｦ-ﾝ\\p{Radical}\\p{Unified_Ideograph}]",
+            with: "",
+            options: .regularExpression
+        )
+        return text.count
     }
 }
 
@@ -42,5 +46,35 @@ extension UIApplication {
         (shared.connectedScenes.first as? UIWindowScene)?
             .keyWindow?
             .safeAreaInsets.top ?? 0
+    }
+}
+
+struct LoadingOverlay: View {
+    let message: String
+    
+    init(_ message: String = "Loading...") {
+        self.message = message
+    }
+    
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.2)
+                .ignoresSafeArea()
+            if #available(iOS 26, *) {
+                VStack(spacing: 12) {
+                    ProgressView()
+                    Text(message)
+                }
+                .padding(24)
+                .glassEffect()
+            } else {
+                VStack(spacing: 12) {
+                    ProgressView()
+                    Text(message)
+                }
+                .padding(24)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
     }
 }
