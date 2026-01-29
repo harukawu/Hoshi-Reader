@@ -8,7 +8,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //
 
-const KANJI_RANGE = '\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF';
+const KANJI_RANGE = '\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF\u3005';
 const KANJI_PATTERN = new RegExp(`[${KANJI_RANGE}]`);
 const KANJI_SEGMENT_PATTERN = new RegExp(`[${KANJI_RANGE}]+|[^${KANJI_RANGE}]+`, 'g');
 const DEFAULT_HARMONIC_RANK = '9999999';
@@ -419,6 +419,7 @@ function mineEntry(expression, reading, frequencies, pitches, definitionTags, ma
         freqHarmonicRank,
         glossary,
         glossaryFirst,
+        singleGlossaries: JSON.stringify(singleGlossaries),
         pitchPositions,
         pitchCategories
     });

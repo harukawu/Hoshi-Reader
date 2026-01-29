@@ -10,6 +10,15 @@ import SwiftUI
 
 struct AnkiView: View {
     @State private var ankiManager = AnkiManager.shared
+    @State private var dictionaryManager = DictionaryManager.shared
+
+    private var availableHandlebars: [String] {
+        var options = Handlebars.allCases.map(\.rawValue)
+        for dict in dictionaryManager.termDictionaries {
+            options.append("\(Handlebars.singleGlossaryPrefix)\(dict.name)}")
+        }
+        return options
+    }
     
     var body: some View {
         List {
@@ -55,9 +64,9 @@ struct AnkiView: View {
                                     ankiManager.save()
                                 }))
                             {
-                                Text("-").tag(nil as Handlebars?)
-                                ForEach(Handlebars.allCases, id: \.rawValue) { option in
-                                    Text(option.rawValue).tag(option as Handlebars?)
+                                Text("-").tag(nil as String?)
+                                ForEach(availableHandlebars, id: \.self) { option in
+                                    Text(option).tag(option as String?)
                                 }
                             }
                         }

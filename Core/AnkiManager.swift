@@ -16,7 +16,7 @@ class AnkiManager {
     
     var selectedDeck: String?
     var selectedNoteType: String?
-    var fieldMappings: [String: Handlebars] = [:]
+    var fieldMappings: [String: String] = [:]
     var tags: String = ""
     
     var availableDecks: [String] = []
@@ -97,40 +97,56 @@ class AnkiManager {
               let pitchCategories = content["pitchCategories"] else {
             return
         }
-        
+
+        let singleGlossaries: [String: String]
+        if let json = content["singleGlossaries"],
+           let data = json.data(using: .utf8),
+           let parsed = try? JSONDecoder().decode([String: String].self, from: data) {
+            singleGlossaries = parsed
+        } else {
+            singleGlossaries = [:]
+        }
+
         var urlComponents = URLComponents(string: Self.addNoteCallback)
         var queryItems = [
             URLQueryItem(name: "deck", value: deck),
             URLQueryItem(name: "type", value: noteType)
         ]
-        
+
         for (field, handlebar) in fieldMappings {
             let value: String
-            switch handlebar {
-            case .expression:
-                value = expression
-            case .reading:
-                value = reading
-            case .furiganaPlain:
-                value = furiganaPlain
-            case .glossary:
-                value = glossary
-            case .glossaryFirst:
-                value = glossaryFirst
-            case .frequencies:
-                value = frequencies
-            case .frequencyHarmonicRank:
-                value = frequencyHarmonicRank
-            case .pitchPositions:
-                value = pitchPositions
-            case .pitchCategories:
-                value = pitchCategories
-            case .sentence:
-                if let sentenceBolded = sentence?.replacingOccurrences(of: matched, with: "<b>\(matched)</b>") {
-                    value = sentenceBolded
-                } else {
-                    value = sentence ?? ""
+            if handlebar.hasPrefix(Handlebars.singleGlossaryPrefix) {
+                let dictName = String(handlebar.dropFirst(Handlebars.singleGlossaryPrefix.count).dropLast())
+                value = singleGlossaries[dictName] ?? ""
+            } else if let standardHandlebar = Handlebars(rawValue: handlebar) {
+                switch standardHandlebar {
+                case .expression:
+                    value = expression
+                case .reading:
+                    value = reading
+                case .furiganaPlain:
+                    value = furiganaPlain
+                case .glossary:
+                    value = glossary
+                case .glossaryFirst:
+                    value = glossaryFirst
+                case .frequencies:
+                    value = frequencies
+                case .frequencyHarmonicRank:
+                    value = frequencyHarmonicRank
+                case .pitchPositions:
+                    value = pitchPositions
+                case .pitchCategories:
+                    value = pitchCategories
+                case .sentence:
+                    if let sentenceBolded = sentence?.replacingOccurrences(of: matched, with: "<b>\(matched)</b>") {
+                        value = sentenceBolded
+                    } else {
+                        value = sentence ?? ""
+                    }
                 }
+            } else {
+                value = ""
             }
             queryItems.append(URLQueryItem(name: "fld" + field, value: value))
         }

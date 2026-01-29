@@ -30,13 +30,13 @@ struct AnkiConfig: Codable {
     let selectedDeck: String?
     let selectedNoteType: String?
     let allowDupes: Bool
-    let fieldMappings: [String: Handlebars]
+    let fieldMappings: [String: String]
     var tags: String?
     let availableDecks: [String]
     let availableNoteTypes: [AnkiNoteType]
 }
 
-enum Handlebars: String, CaseIterable, Codable {
+enum Handlebars: String, CaseIterable {
     case expression = "{expression}"
     case reading = "{reading}"
     case furiganaPlain = "{furigana-plain}"
@@ -47,4 +47,6 @@ enum Handlebars: String, CaseIterable, Codable {
     case frequencyHarmonicRank = "{frequency-harmonic-rank}"
     case pitchPositions = "{pitch-accent-positions}"
     case pitchCategories = "{pitch-accent-categories}"
+
+    static let singleGlossaryPrefix = "{single-glossary-"
 }
