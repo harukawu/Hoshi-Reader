@@ -1,0 +1,224 @@
+//
+//  DictionarySearchView.swift
+//  Hoshi Reader
+//
+//  Copyright © 2026 Manhhao.
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//
+
+import SwiftUI
+import CYomitanDicts
+
+struct DictionarySearchView: View {
+    @Environment(UserConfig.self) private var userConfig
+    @State private var query: String = ""
+    @State private var lastQuery: String = ""
+    @State private var content: String = ""
+    @State private var hasSearched = false
+    
+    var body: some View {
+        PopupWebView(
+            content: content,
+            onMine: { minedContent in
+                AnkiManager.shared.addNote(content: minedContent, sentence: lastQuery)
+            }
+        )
+        .navigationTitle("Dictionary Search")
+        .navigationBarTitleDisplayMode(.inline)
+        .ignoresSafeArea()
+        .overlay(alignment: .bottom){
+            DictionarySearchBar(text: $query) {
+                runLookup()
+            }
+        }
+    }
+    
+    private func runLookup() {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        hasSearched = true
+        lastQuery = trimmed
+        
+        guard !trimmed.isEmpty else {
+            content = ""
+            return
+        }
+        
+        let results = LookupEngine.shared.lookup(trimmed, maxResults: userConfig.maxResults)
+        if results.isEmpty {
+            content = ""
+            return
+        }
+        
+        let styles = LookupEngine.shared.getStyles()
+        content = buildHtml(results: results, styles: styles)
+    }
+    
+    private func buildHtml(results: [LookupResult], styles: [DictionaryStyle]) -> String {
+        var entries: [EntryData] = []
+        
+        for result in results {
+            let expression = String(result.term.expression)
+            let reading = String(result.term.reading)
+            let matched = String(result.matched)
+            let deinflectionTrace = result.trace.map { DeinflectionTag(name: String($0.name), description: String($0.description)) }
+            
+            var glossaries: [GlossaryData] = []
+            for glossary in result.term.glossaries {
+                glossaries.append(GlossaryData(
+                    dictionary: String(glossary.dict_name),
+                    content: String(glossary.glossary)
+                ))
+            }
+            
+            var frequencies: [FrequencyData] = []
+            for frequency in result.term.frequencies {
+                var frequencyTags: [FrequencyTag] = []
+                for frequencyTag in frequency.frequencies {
+                    frequencyTags.append(FrequencyTag(value: Int(frequencyTag.value), displayValue: String(frequencyTag.display_value)))
+                }
+                frequencies.append(FrequencyData(
+                    dictionary: String(frequency.dict_name),
+                    frequencies: frequencyTags))
+            }
+            
+            var pitches: [PitchData] = []
+            for pitchEntry in result.term.pitches {
+                var pitchPositions: [Int] = []
+                for element in pitchEntry.pitch_positions {
+                    let position = Int(element)
+                    if !pitchPositions.contains(position) {
+                        pitchPositions.append(position)
+                    }
+                }
+                pitches.append(PitchData(dictionary: String(pitchEntry.dict_name), pitchPositions: pitchPositions))
+            }
+            
+            let definitionTags = String(result.term.definition_tags).split(separator: " ").map { String($0) }
+            
+            entries.append(EntryData(
+                expression: expression,
+                reading: reading,
+                matched: matched,
+                deinflectionTrace: deinflectionTrace,
+                glossaries: glossaries,
+                frequencies: frequencies,
+                pitches: pitches,
+                definitionTags: definitionTags
+            ))
+        }
+        
+        var dictionaryStyles: [String: String] = [:]
+        for style in styles {
+            dictionaryStyles[String(style.dict_name)] = String(style.styles)
+        }
+        
+        let stylesJson = (try? JSONEncoder().encode(dictionaryStyles)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        let entriesJson = (try? JSONEncoder().encode(entries)).flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+        
+        return """
+        <script>
+            window.dictionaryStyles = \(stylesJson);
+            window.lookupEntries = \(entriesJson);
+            window.collapseDictionaries = \(userConfig.collapseDictionaries);
+        </script>
+        <div id="entries-container"></div>
+        """
+    }
+}
+
+struct DictionarySearchBar: View {
+    @Binding var text: String
+    let onSubmit: () -> Void
+    
+    init(text: Binding<String>, onSubmit: @escaping () -> Void) {
+        self._text = text
+        self.onSubmit = onSubmit
+    }
+    
+    var body: some View {
+        if #available(iOS 26, *) {
+            HStack(spacing: 10) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                
+                TextField("", text: $text)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.search)
+                    .onSubmit(onSubmit)
+                
+                if !text.isEmpty {
+                    Button {
+                        text = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(10)
+            .glassEffect(.regular.interactive())
+            .contentShape(Capsule())
+            .padding(.horizontal, 20)
+        }
+        else {
+            HStack(spacing: 10) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                
+                TextField("", text: $text)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.search)
+                    .onSubmit(onSubmit)
+                
+                if !text.isEmpty {
+                    Button {
+                        text = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(10)
+            .background(.ultraThinMaterial)
+            .contentShape(Capsule())
+            .padding(.horizontal, 20)
+        }
+    }
+}
+
+struct CircleButton: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let systemName: String
+    let interactive: Bool
+    let fontSize: CGFloat
+    
+    init(systemName: String, interactive: Bool = true, fontSize: CGFloat = 20) {
+        self.systemName = systemName
+        self.interactive = interactive
+        self.fontSize = fontSize
+    }
+    
+    var body: some View {
+        if #available(iOS 26, *) {
+            Image(systemName: systemName)
+                .font(.system(size: fontSize))
+                .foregroundStyle(.primary)
+                .frame(width: 44, height: 44)
+                .glassEffect(interactive ? .regular.interactive() : .regular)
+                .padding(8)
+                .contentShape(Circle())
+        } else {
+            Image(systemName: systemName)
+                .font(.system(size: fontSize))
+                .foregroundStyle(.primary)
+                .padding(8)
+        }
+    }
+}

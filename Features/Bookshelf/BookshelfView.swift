@@ -17,6 +17,7 @@ struct BookshelfView: View {
     @State private var showAnkiSettings = false
     @State private var showAppearance = false
     @State private var showSync = false
+    @State private var showDictionarySearch = false
     
     private let columns = [
         GridItem(.adaptive(minimum: 160), spacing: 20)
@@ -52,6 +53,9 @@ struct BookshelfView: View {
             }
             .navigationDestination(isPresented: $showSync) {
                 SyncView()
+            }
+            .navigationDestination(isPresented: $showDictionarySearch) {
+                DictionarySearchView()
             }
             .sheet(isPresented: $showAppearance) {
                 AppearanceView(userConfig: userConfig)
@@ -93,6 +97,13 @@ struct BookshelfView: View {
             } label: {
                 Image(systemName: "arrow.up.arrow.down")
             }
+        }
+        
+        ToolbarItem(placement: .principal) {
+            CircleButton(systemName: "text.page.badge.magnifyingglass", interactive: true, fontSize: 16)
+                .onTapGesture {
+                    showDictionarySearch = true
+                }
         }
         
         ToolbarItem(placement: .topBarTrailing) {
