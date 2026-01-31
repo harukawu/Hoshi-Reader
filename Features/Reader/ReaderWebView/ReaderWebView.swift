@@ -22,7 +22,6 @@ struct SelectionData {
 
 struct ReaderWebView: UIViewRepresentable {
     let fileURL: URL?
-    let contentURL: URL
     let userConfig: UserConfig
     let viewSize: CGSize
     
@@ -83,7 +82,10 @@ struct ReaderWebView: UIViewRepresentable {
         
         if context.coordinator.currentURL != url {
             context.coordinator.currentURL = url
-            webView.loadFileURL(url, allowingReadAccessTo: try! BookStorage.getDocumentsDirectory())
+            guard let documentsDirectory = try? BookStorage.getDocumentsDirectory() else {
+                return
+            }
+            webView.loadFileURL(url, allowingReadAccessTo: documentsDirectory)
         }
     }
     

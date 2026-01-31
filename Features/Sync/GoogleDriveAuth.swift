@@ -89,10 +89,9 @@ class GoogleDriveAuth: NSObject {
             "grant_type": "refresh_token",
             "refresh_token": refreshToken
         ]
-        request.httpBody = params
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: "&")
-            .data(using: .utf8)
+        var bodyComponents = URLComponents()
+        bodyComponents.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+        request.httpBody = bodyComponents.percentEncodedQuery?.data(using: .utf8)
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -169,8 +168,11 @@ extension GoogleDriveAuth: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         let windowScene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
-            .first!
-        return windowScene.keyWindow ?? UIWindow(windowScene: windowScene)
+            .first
+        guard let windowScene else {
+            return UIWindow()
+        }
+        return windowScene.keyWindow ?? windowScene.windows.first ?? UIWindow(windowScene: windowScene)
     }
 }
 

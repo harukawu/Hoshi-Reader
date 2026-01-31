@@ -10,7 +10,7 @@ import EPUBKit
 import Foundation
 
 struct BookProcessor {
-    static func process(document: EPUBDocument) -> BookInfo? {
+    static func process(document: EPUBDocument) -> BookInfo {
         var chapterInfo: [String: BookInfo.ChapterInfo] = [:]
         var total = 0
         for (index, item) in document.spine.items.enumerated() {

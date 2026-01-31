@@ -28,32 +28,8 @@ enum Themes: String, CaseIterable, Codable {
 
 @Observable
 class UserConfig {
-    var fontSize: Int {
-        didSet { UserDefaults.standard.set(fontSize, forKey: "fontSize") }
-    }
-    
-    var horizontalPadding: Int {
-        didSet { UserDefaults.standard.set(horizontalPadding, forKey: "horizontalPadding") }
-    }
-    
-    var verticalPadding: Int {
-        didSet { UserDefaults.standard.set(verticalPadding, forKey: "verticalPadding") }
-    }
-    
     var bookshelfSortOption: SortOption {
         didSet { UserDefaults.standard.set(bookshelfSortOption.rawValue, forKey: "bookshelfSortOption") }
-    }
-    
-    var theme: Themes {
-        didSet { UserDefaults.standard.set(theme.rawValue, forKey: "theme") }
-    }
-    
-    var popupWidth: Int {
-        didSet { UserDefaults.standard.set(popupWidth, forKey: "popupWidth") }
-    }
-    
-    var popupHeight: Int {
-        didSet { UserDefaults.standard.set(popupHeight, forKey: "popupHeight") }
     }
     
     var maxResults: Int {
@@ -68,32 +44,16 @@ class UserConfig {
         didSet { UserDefaults.standard.set(enableSync, forKey: "enableSync") }
     }
     
-    var verticalWriting: Bool {
-        didSet { UserDefaults.standard.set(verticalWriting, forKey: "verticalWriting") }
-    }
-    
     var googleClientId: String {
         didSet { UserDefaults.standard.set(googleClientId, forKey: "googleClientId") }
     }
     
+    var theme: Themes {
+        didSet { UserDefaults.standard.set(theme.rawValue, forKey: "theme") }
+    }
+    
     var uiTheme: Themes {
         didSet { UserDefaults.standard.set(uiTheme.rawValue, forKey: "uiTheme") }
-    }
-    
-    var readerShowProgressTop: Bool {
-        didSet { UserDefaults.standard.set(readerShowProgressTop, forKey: "readerShowProgressTop") }
-    }
-    
-    var readerShowTitle: Bool {
-        didSet { UserDefaults.standard.set(readerShowTitle, forKey: "readerShowTitle") }
-    }
-    
-    var readerShowCharacters: Bool {
-        didSet { UserDefaults.standard.set(readerShowCharacters, forKey: "readerShowCharacters") }
-    }
-    
-    var readerShowPercentage: Bool {
-        didSet { UserDefaults.standard.set(readerShowPercentage, forKey: "readerShowPercentage") }
     }
     
     var customBackgroundColor: Color {
@@ -108,50 +68,88 @@ class UserConfig {
         }
     }
     
+    var verticalWriting: Bool {
+        didSet { UserDefaults.standard.set(verticalWriting, forKey: "verticalWriting") }
+    }
+    
+    var fontSize: Int {
+        didSet { UserDefaults.standard.set(fontSize, forKey: "fontSize") }
+    }
+    
     var selectedFont: String {
         didSet { UserDefaults.standard.set(selectedFont, forKey: "selectedFont") }
     }
     
-    var readerHideFurigana: Bool {
-        didSet { UserDefaults.standard.set(readerHideFurigana, forKey: "readerHideFurigana") }
-
+    var horizontalPadding: Int {
+        didSet { UserDefaults.standard.set(horizontalPadding, forKey: "horizontalPadding") }
     }
     
+    var verticalPadding: Int {
+        didSet { UserDefaults.standard.set(verticalPadding, forKey: "verticalPadding") }
+    }
+    
+    var readerHideFurigana: Bool {
+        didSet { UserDefaults.standard.set(readerHideFurigana, forKey: "readerHideFurigana") }
+    }
+    
+    var readerShowTitle: Bool {
+        didSet { UserDefaults.standard.set(readerShowTitle, forKey: "readerShowTitle") }
+    }
+    
+    var readerShowCharacters: Bool {
+        didSet { UserDefaults.standard.set(readerShowCharacters, forKey: "readerShowCharacters") }
+    }
+    
+    var readerShowPercentage: Bool {
+        didSet { UserDefaults.standard.set(readerShowPercentage, forKey: "readerShowPercentage") }
+    }
+    
+    var readerShowProgressTop: Bool {
+        didSet { UserDefaults.standard.set(readerShowProgressTop, forKey: "readerShowProgressTop") }
+    }
+    
+    var popupWidth: Int {
+        didSet { UserDefaults.standard.set(popupWidth, forKey: "popupWidth") }
+    }
+    
+    var popupHeight: Int {
+        didSet { UserDefaults.standard.set(popupHeight, forKey: "popupHeight") }
+    }
+
     init() {
         let defaults = UserDefaults.standard
-        
-        self.fontSize = defaults.object(forKey: "fontSize") as? Int ?? 22
-        self.horizontalPadding = defaults.object(forKey: "horizontalPadding") as? Int ?? 10
-        self.verticalPadding = defaults.object(forKey: "verticalPadding") as? Int ?? 0
-        self.popupWidth = defaults.object(forKey: "popupWidth") as? Int ?? 320
-        self.popupHeight = defaults.object(forKey: "popupHeight") as? Int ?? 250
-        self.maxResults = defaults.object(forKey: "maxResults") as? Int ?? 16
-        self.collapseDictionaries = defaults.object(forKey: "collapseDictionaries") as? Bool ?? true
-        self.readerHideFurigana = defaults.object(forKey: "readerHideFurigana") as? Bool ?? false
-        
-        self.enableSync = defaults.object(forKey: "enableSync") as? Bool ?? false
-        self.googleClientId = defaults.object(forKey: "googleClientId") as? String ?? ""
         
         self.bookshelfSortOption = defaults.string(forKey: "bookshelfSortOption")
             .flatMap(SortOption.init) ?? .recent
         
+        self.maxResults = defaults.object(forKey: "maxResults") as? Int ?? 16
+        self.collapseDictionaries = defaults.object(forKey: "collapseDictionaries") as? Bool ?? true
+        
+        self.enableSync = defaults.object(forKey: "enableSync") as? Bool ?? false
+        self.googleClientId = defaults.object(forKey: "googleClientId") as? String ?? ""
+        
         self.theme = defaults.string(forKey: "theme")
             .flatMap(Themes.init) ?? .system
-        
         self.uiTheme = defaults.string(forKey: "uiTheme")
             .flatMap(Themes.init) ?? .system
-        
         self.customBackgroundColor = UserConfig.loadColor(key: "customBackgroundColor") ?? Color(.sRGB, red: 1, green: 1, blue: 1)
         self.customTextColor = UserConfig.loadColor(key: "customTextColor") ?? Color(.sRGB, red: 0, green: 0, blue: 0)
         
+        self.verticalWriting = defaults.object(forKey: "verticalWriting") as? Bool ?? true
+        self.fontSize = defaults.object(forKey: "fontSize") as? Int ?? 22
         self.selectedFont = defaults.string(forKey: "selectedFont") ?? "Hiragino Mincho ProN"
         
-        self.verticalWriting = defaults.object(forKey: "verticalWriting") as? Bool ?? true
+        self.horizontalPadding = defaults.object(forKey: "horizontalPadding") as? Int ?? 10
+        self.verticalPadding = defaults.object(forKey: "verticalPadding") as? Int ?? 0
+        self.readerHideFurigana = defaults.object(forKey: "readerHideFurigana") as? Bool ?? false
         
-        self.readerShowProgressTop = defaults.object(forKey: "readerShowProgressTop") as? Bool ?? true
         self.readerShowTitle = defaults.object(forKey: "readerShowTitle") as? Bool ?? true
         self.readerShowCharacters = defaults.object(forKey: "readerShowCharacters") as? Bool ?? true
         self.readerShowPercentage = defaults.object(forKey: "readerShowPercentage") as? Bool ?? true
+        self.readerShowProgressTop = defaults.object(forKey: "readerShowProgressTop") as? Bool ?? true
+        
+        self.popupWidth = defaults.object(forKey: "popupWidth") as? Int ?? 320
+        self.popupHeight = defaults.object(forKey: "popupHeight") as? Int ?? 250
     }
     
     private static func saveColor(_ color: Color, key: String) {

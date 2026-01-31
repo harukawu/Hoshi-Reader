@@ -100,7 +100,6 @@ struct ReaderView: View {
                 ZStack {
                     ReaderWebView(
                         fileURL: viewModel.getCurrentChapter(),
-                        contentURL: viewModel.document.contentDirectory,
                         userConfig: userConfig,
                         viewSize: CGSize(width: geometry.size.width, height: geometry.size.height),
                         currentProgress: viewModel.currentProgress,
