@@ -160,7 +160,9 @@ struct PopupView: View {
             for glossary in result.term.glossaries {
                 glossaries.append(GlossaryData(
                     dictionary: String(glossary.dict_name),
-                    content: String(glossary.glossary)
+                    content: String(glossary.glossary),
+                    definitionTags: String(glossary.definition_tags),
+                    termTags: String(glossary.term_tags)
                 ))
             }
             
@@ -209,6 +211,7 @@ struct PopupView: View {
             window.dictionaryStyles = \(styles);
             window.lookupEntries = \(entriesJson);
             window.collapseDictionaries = \(userConfig.collapseDictionaries);
+            window.compactGlossaries = \(userConfig.compactGlossaries);
         </script>
         <div id="entries-container"></div>
         """

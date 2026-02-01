@@ -27,6 +27,7 @@ struct DictionaryView: View {
                         .labelsHidden()
                 }
                 Toggle("Auto-collapse Dictionaries", isOn: Bindable(userConfig).collapseDictionaries)
+                Toggle("Compact Glossaries", isOn: Bindable(userConfig).compactGlossaries)
             } header: {
                 Text("Lookup Settings")
             } footer: {

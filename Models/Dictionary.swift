@@ -39,6 +39,8 @@ struct DictionaryConfig: Codable {
 struct GlossaryData: Encodable {
     let dictionary: String
     let content: String
+    let definitionTags: String
+    let termTags: String
 }
 
 struct FrequencyData: Encodable {

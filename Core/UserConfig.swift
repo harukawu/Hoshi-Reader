@@ -39,6 +39,10 @@ class UserConfig {
     var collapseDictionaries: Bool {
         didSet { UserDefaults.standard.set(collapseDictionaries, forKey: "collapseDictionaries") }
     }
+
+    var compactGlossaries: Bool {
+        didSet { UserDefaults.standard.set(compactGlossaries, forKey: "compactGlossaries") }
+    }
     
     var enableSync: Bool {
         didSet { UserDefaults.standard.set(enableSync, forKey: "enableSync") }
@@ -124,6 +128,7 @@ class UserConfig {
         
         self.maxResults = defaults.object(forKey: "maxResults") as? Int ?? 16
         self.collapseDictionaries = defaults.object(forKey: "collapseDictionaries") as? Bool ?? true
+        self.compactGlossaries = defaults.object(forKey: "compactGlossaries") as? Bool ?? false
         
         self.enableSync = defaults.object(forKey: "enableSync") as? Bool ?? false
         self.googleClientId = defaults.object(forKey: "googleClientId") as? String ?? ""

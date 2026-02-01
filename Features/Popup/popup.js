@@ -13,6 +13,7 @@ const KANJI_PATTERN = new RegExp(`[${KANJI_RANGE}]`);
 const KANJI_SEGMENT_PATTERN = new RegExp(`[${KANJI_RANGE}]+|[^${KANJI_RANGE}]+`, 'g');
 const DEFAULT_HARMONIC_RANK = '9999999';
 const SMALL_KANA_SET = new Set('ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ');
+const NUMERIC_TAG = /^\d+$/;
 
 function el(tag, props = {}, children = []) {
     const element = document.createElement(tag);
@@ -443,6 +444,7 @@ function renderStructuredContent(parent, node) {
         const insideSpan = parent.tagName === 'SPAN';
         if (isStringArray && node.length > 1 && !insideSpan) {
             const ul = document.createElement('ul');
+            ul.classList.add('glossary-list');
             node.forEach(child => {
                 const li = document.createElement('li');
                 li.appendChild(document.createTextNode(child));
@@ -505,6 +507,17 @@ function renderStructuredContent(parent, node) {
     }
 
     parent.appendChild(element);
+}
+
+function parseTags(raw) {
+    return (raw || '').split(' ').filter(Boolean);
+}
+
+function createGlossaryTags(tags, className = 'glossary-tags') {
+    if (!tags?.length) {
+        return null;
+    }
+    return el('div', { className }, tags.map(tag => el('span', { className: 'glossary-tag', textContent: tag })));
 }
 
 function createDeinflectionTag(tag) {
@@ -672,10 +685,37 @@ function createGlossarySection(dictName, contents, isFirst) {
         details.open = true;
     }
 
-    details.appendChild(el('summary', { className: 'dict-label', textContent: dictName }));
+    const summary = el('summary', { className: 'dict-label' });
+    summary.appendChild(el('span', { className: 'dict-name', textContent: dictName }));
+    details.appendChild(summary);
 
     const shadowHost = document.createElement('div');
     const shadow = shadowHost.attachShadow({ mode: 'open' });
+    const compactCss = window.compactGlossaries ? `
+        ul[data-sc-content="glossary"],
+        ol[data-sc-content="glossary"],
+        .glossary-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        ul[data-sc-content="glossary"] > li,
+        ol[data-sc-content="glossary"] > li,
+        .glossary-list > li {
+            display: inline;
+        }
+        ul[data-sc-content="glossary"] > li::after,
+        ol[data-sc-content="glossary"] > li::after,
+        .glossary-list > li::after {
+            content: " | ";
+            opacity: 0.6;
+        }
+        ul[data-sc-content="glossary"] > li:last-child::after,
+        ol[data-sc-content="glossary"] > li:last-child::after,
+        .glossary-list > li:last-child::after {
+            content: "";
+        }
+    ` : '';
 
     const dictStyle = window.dictionaryStyles?.[dictName] ?? '';
     shadow.appendChild(el('style', {
@@ -684,7 +724,7 @@ function createGlossarySection(dictName, contents, isFirst) {
                 display: block;
                 font-size: 14px;
                 line-height: 1.4;
-                padding: 0px 0;
+                padding: 0;
             }
             ul, ol {
                 padding-left: 1.2em;
@@ -692,6 +732,19 @@ function createGlossarySection(dictName, contents, isFirst) {
             }
             li { 
                 margin: 1px 0;
+            }
+            .glossary-tags {
+                display: inline-flex;
+                gap: 4px;
+                flex-wrap: wrap;
+                margin: 0 0 2px 0;
+            }
+            .glossary-tag {
+                font-size: 10px;
+                padding: 2px 4px;
+                background-color: rgba(128, 128, 128, 0.2);
+                border-radius: 4px;
+                line-height: 1;
             }
             table {
                 table-layout: auto;
@@ -708,29 +761,51 @@ function createGlossarySection(dictName, contents, isFirst) {
             @media (prefers-color-scheme: light) { :host { color: #000; } }
             @media (prefers-color-scheme: dark) { :host { color: #fff; } }
             ${dictStyle}
+            ${compactCss}
         `.trim()
     }));
     
+    const termTags = [...new Set(parseTags(contents[0]?.termTags))];
+    const firstDefTags = new Set(parseTags(contents[0]?.definitionTags).filter(tag => !NUMERIC_TAG.test(tag)));
+
+    const getFilteredDefTags = (definitionTags, isFirst) => {
+        const tags = parseTags(definitionTags).filter(tag => !NUMERIC_TAG.test(tag));
+        return isFirst ? tags : tags.filter(tag => !firstDefTags.has(tag));
+    };
+
+    const renderContent = (parent, content) => {
+        try {
+            renderStructuredContent(parent, JSON.parse(content));
+        } catch {
+            renderStructuredContent(parent, content);
+        }
+    };
+
+    const termTagsRow = createGlossaryTags(termTags);
+    if (termTagsRow) {
+        shadow.appendChild(termTagsRow);
+    }
+
     if (contents.length > 1) {
-        const ol = document.createElement('ol');
-        contents.forEach(content => {
-            const li = document.createElement('li');
-            try {
-                renderStructuredContent(li, JSON.parse(content));
-            } catch {
-                renderStructuredContent(li, content);
+        const ol = el('ol');
+        contents.forEach((item, idx) => {
+            const li = el('li');
+            const tags = createGlossaryTags(getFilteredDefTags(item.definitionTags, idx === 0));
+            if (tags) {
+                li.appendChild(tags);
             }
+            renderContent(li, item.content);
             ol.appendChild(li);
         });
         shadow.appendChild(ol);
     } else {
-        contents.forEach(content => {
-            const wrapper = document.createElement('div');
-            try {
-                renderStructuredContent(wrapper, JSON.parse(content));
-            } catch {
-                renderStructuredContent(wrapper, content);
+        contents.forEach((item, idx) => {
+            const wrapper = el('div');
+            const tags = createGlossaryTags(getFilteredDefTags(item.definitionTags, idx === 0));
+            if (tags) {
+                wrapper.appendChild(tags);
             }
+            renderContent(wrapper, item.content);
             shadow.appendChild(wrapper);
         });
     }
@@ -760,7 +835,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const grouped = {};
         entry.glossaries.forEach(g => {
-            (grouped[g.dictionary] ??= []).push(g.content);
+            (grouped[g.dictionary] ??= []).push({
+                content: g.content,
+                definitionTags: g.definitionTags,
+                termTags: g.termTags
+            });
         });
 
         Object.keys(grouped).forEach((dictName, dictIdx) => {
