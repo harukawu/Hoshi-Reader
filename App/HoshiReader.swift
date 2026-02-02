@@ -35,6 +35,8 @@ struct HoshiReaderApp: App {
         }
         if url.host == "ankiFetch" {
             AnkiManager.shared.fetch()
+        } else {
+            AnkiManager.shared.stopServer()
         }
     }
 }

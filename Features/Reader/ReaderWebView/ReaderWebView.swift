@@ -16,7 +16,7 @@ private enum NavigationDirection {
 
 struct SelectionData {
     let text: String
-    let sentence: String?
+    let sentence: String
     let rect: CGRect
 }
 
@@ -115,6 +115,7 @@ struct ReaderWebView: UIViewRepresentable {
                 return
             }
             guard let text = body["text"] as? String,
+                  let sentence = body["sentence"] as? String,
                   let rectData = body["rect"] as? [String: Any],
                   let x = rectData["x"] as? CGFloat,
                   let y = rectData["y"] as? CGFloat,
@@ -122,7 +123,6 @@ struct ReaderWebView: UIViewRepresentable {
                   let h = rectData["height"] as? CGFloat else {
                 return
             }
-            let sentence = body["sentence"] as? String
             let rect = CGRect(x: x, y: y, width: w, height: h)
             let selectionData = SelectionData(text: text, sentence: sentence, rect: rect)
             

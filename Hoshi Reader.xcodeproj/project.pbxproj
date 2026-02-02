@@ -35,6 +35,7 @@
 				BookStorage.swift,
 				DictionaryManager.swift,
 				FontManager.swift,
+				LocalFileServer.swift,
 				LookupEngine.swift,
 				UserConfig.swift,
 			);

@@ -128,7 +128,9 @@ struct ReaderView: View {
                         lookupResults: viewModel.lookupResults,
                         dictionaryStyles: viewModel.dictionaryStyles,
                         screenSize: geometry.size,
-                        isVertical: userConfig.verticalWriting
+                        isVertical: userConfig.verticalWriting,
+                        coverURL: viewModel.coverURL,
+                        documentTitle: viewModel.document.title
                     )
                     .zIndex(100)
                 }

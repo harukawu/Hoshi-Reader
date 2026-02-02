@@ -28,6 +28,8 @@ class AnkiManager {
     
     var isConnected: Bool { !availableDecks.isEmpty }
     
+    private let fileServer = LocalFileServer()
+    
     private static let scheme = "hoshi://"
     private static let fetchCallback = scheme + "ankiFetch"
     
@@ -56,7 +58,7 @@ class AnkiManager {
             self.performFetch(retryCount: retryCount)
         }
     }
-
+    
     private func performFetch(retryCount: Int) {
         guard let data = UIPasteboard.general.data(forPasteboardType: Self.pasteboardType) else {
             if retryCount < 3 {
@@ -93,7 +95,7 @@ class AnkiManager {
         save()
     }
     
-    func addNote(content: [String: String], sentence: String?) {
+    func addNote(content: [String: String], context: MiningContext) {
         guard let deck = selectedDeck,
               let noteType = selectedNoteType,
               let expression = content["expression"],
@@ -116,6 +118,12 @@ class AnkiManager {
             singleGlossaries = parsed
         } else {
             singleGlossaries = [:]
+        }
+        
+        var coverPath: String?
+        if let coverURL = context.coverURL {
+            try? fileServer.start(file: coverURL)
+            coverPath = "http://localhost:8080/\(coverURL.lastPathComponent)"
         }
         
         var urlComponents = URLComponents(string: Self.addNoteCallback)
@@ -150,11 +158,13 @@ class AnkiManager {
                 case .pitchCategories:
                     value = pitchCategories
                 case .sentence:
-                    if let sentenceBolded = sentence?.replacingOccurrences(of: matched, with: "<b>\(matched)</b>") {
-                        value = sentenceBolded
-                    } else {
-                        value = sentence ?? ""
-                    }
+                    value = context.sentence.replacingOccurrences(of: matched, with: "<b>\(matched)</b>")
+                case .documentTitle:
+                    value = context.documentTitle ?? ""
+                case .selectionText:
+                    value = content["selectionText"] ?? ""
+                case .bookCover:
+                    value = coverPath ?? ""
                 }
             } else {
                 value = ""
@@ -177,6 +187,10 @@ class AnkiManager {
         if let url = urlComponents?.url {
             UIApplication.shared.open(url)
         }
+    }
+    
+    func stopServer() {
+        fileServer.stop()
     }
     
     func save() {

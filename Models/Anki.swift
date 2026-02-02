@@ -36,17 +36,26 @@ struct AnkiConfig: Codable {
     let availableNoteTypes: [AnkiNoteType]
 }
 
+struct MiningContext {
+    let sentence: String
+    let documentTitle: String?
+    let coverURL: URL?
+}
+
 enum Handlebars: String, CaseIterable {
     case expression = "{expression}"
     case reading = "{reading}"
     case furiganaPlain = "{furigana-plain}"
     case glossary = "{glossary}"
     case glossaryFirst = "{glossary-first}"
+    case selectionText = "{selection-text}"
     case sentence = "{sentence}"
     case frequencies = "{frequencies}"
     case frequencyHarmonicRank = "{frequency-harmonic-rank}"
     case pitchPositions = "{pitch-accent-positions}"
     case pitchCategories = "{pitch-accent-categories}"
-    
+    case documentTitle = "{document-title}"
+    case bookCover = "{book-cover}"
+
     static let singleGlossaryPrefix = "{single-glossary-"
 }

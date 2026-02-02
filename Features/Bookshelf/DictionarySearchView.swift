@@ -20,7 +20,7 @@ struct DictionarySearchView: View {
         PopupWebView(
             content: content,
             onMine: { minedContent in
-                AnkiManager.shared.addNote(content: minedContent, sentence: lastQuery)
+                AnkiManager.shared.addNote(content: minedContent, context: MiningContext(sentence: lastQuery, documentTitle: nil, coverURL: nil))
             }
         )
         .navigationTitle("Dictionary Search")

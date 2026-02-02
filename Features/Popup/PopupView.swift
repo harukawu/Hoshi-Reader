@@ -98,6 +98,8 @@ struct PopupView: View {
     let dictionaryStyles: [String: String]
     let screenSize: CGSize
     let isVertical: Bool
+    let coverURL: URL?
+    let documentTitle: String?
     
     private var layout: PopupLayout? {
         guard let selectionData else {
@@ -120,7 +122,7 @@ struct PopupView: View {
                     PopupWebView(
                         content: constructHtml(selectionData: selectionData),
                         onMine: { content in
-                            AnkiManager.shared.addNote(content: content, sentence: selectionData.sentence)
+                            AnkiManager.shared.addNote(content: content, context: MiningContext(sentence: selectionData.sentence, documentTitle: documentTitle, coverURL: coverURL))
                         }
                     )
                     .frame(width: layout.width, height: layout.height)
@@ -136,7 +138,7 @@ struct PopupView: View {
                 PopupWebView(
                     content: constructHtml(selectionData: selectionData),
                     onMine: { content in
-                        AnkiManager.shared.addNote(content: content, sentence: selectionData.sentence)
+                        AnkiManager.shared.addNote(content: content, context: MiningContext(sentence: selectionData.sentence, documentTitle: documentTitle, coverURL: coverURL))
                     }
                 )
                 .frame(width: layout.width, height: layout.height)

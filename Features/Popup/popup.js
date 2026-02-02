@@ -14,6 +14,7 @@ const KANJI_SEGMENT_PATTERN = new RegExp(`[${KANJI_RANGE}]+|[^${KANJI_RANGE}]+`,
 const DEFAULT_HARMONIC_RANK = '9999999';
 const SMALL_KANA_SET = new Set('ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ');
 const NUMERIC_TAG = /^\d+$/;
+let lastSelection = '';
 
 function el(tag, props = {}, children = []) {
     const element = document.createElement(tag);
@@ -401,7 +402,7 @@ function getFrequencyHarmonicRank(frequencies) {
     return String(Math.round(values.length / sumOfReciprocals));
 }
 
-function mineEntry(expression, reading, frequencies, pitches, definitionTags, matched, entryIndex) {
+function mineEntry(expression, reading, frequencies, pitches, definitionTags, matched, entryIndex, selectionText = '') {
     const idx = entryIndex || 0;
     const furiganaPlain = constructFuriganaPlain(expression, reading);
     const glossary = constructGlossaryHtml(idx);
@@ -422,7 +423,8 @@ function mineEntry(expression, reading, frequencies, pitches, definitionTags, ma
         glossaryFirst,
         singleGlossaries: JSON.stringify(singleGlossaries),
         pitchPositions,
-        pitchCategories
+        pitchCategories,
+        selectionText
     });
 }
 
@@ -673,7 +675,10 @@ function createEntryHeader(entry, idx) {
     header.appendChild(el('button', {
         className: 'mine-button',
         textContent: '+',
-        onclick: () => mineEntry(expression, reading, frequencies, pitches, definitionTags, matched, idx)
+        ontouchstart: () => {
+            lastSelection = window.getSelection()?.toString() || '';
+        },
+        onclick: () => mineEntry(expression, reading, frequencies, pitches, definitionTags, matched, idx, lastSelection)
     }));
 
     return header;
