@@ -145,8 +145,8 @@ class UserConfig {
             .flatMap(SortOption.init) ?? .recent
         
         self.maxResults = defaults.object(forKey: "maxResults") as? Int ?? 16
-        self.collapseDictionaries = defaults.object(forKey: "collapseDictionaries") as? Bool ?? true
-        self.compactGlossaries = defaults.object(forKey: "compactGlossaries") as? Bool ?? false
+        self.collapseDictionaries = defaults.object(forKey: "collapseDictionaries") as? Bool ?? false
+        self.compactGlossaries = defaults.object(forKey: "compactGlossaries") as? Bool ?? true
         
         self.enableSync = defaults.object(forKey: "enableSync") as? Bool ?? false
         self.googleClientId = defaults.object(forKey: "googleClientId") as? String ?? ""
