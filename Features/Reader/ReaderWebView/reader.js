@@ -229,17 +229,35 @@ window.hoshiReader = {
             if (!pos) {
                 return null;
             }
-            
+
             const range = document.createRange();
             range.setStart(pos.offsetNode, pos.offset);
             range.collapse(true);
             return range;
+        } else {
+            const element = document.elementFromPoint(x, y);
+            if (!element) {
+                return null;
+            }
+            
+            const container = element.closest('p, div, span, ruby, a') || document.body;
+            const walker = this.createWalker(container);
+            
+            const range = document.createRange();
+            let node;
+            while (node = walker.nextNode()) {
+                for (let i = 0; i < node.textContent.length; i++) {
+                    range.setStart(node, i);
+                    range.setEnd(node, i + 1);
+                    const rect = range.getBoundingClientRect();
+                    if (rect.left <= x && x <= rect.right && rect.top <= y && y <= rect.bottom) {
+                        range.collapse(true);
+                        return range;
+                    }
+                }
+            }
+            return document.caretRangeFromPoint(x, y);
         }
-        else if (document.caretRangeFromPoint) {
-            const range = document.caretRangeFromPoint(x, y);
-            return range;
-        }
-        return null;
     },
     
     getCharacterAtPoint(x, y) {
