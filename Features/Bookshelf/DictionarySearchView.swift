@@ -135,6 +135,7 @@ struct DictionarySearchView: View {
 
 struct DictionarySearchBar: View {
     @Binding var text: String
+    @FocusState private var isFocused: Bool
     let onSubmit: () -> Void
     
     init(text: Binding<String>, onSubmit: @escaping () -> Void) {
@@ -153,11 +154,13 @@ struct DictionarySearchBar: View {
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .submitLabel(.search)
+                    .focused($isFocused)
                     .onSubmit(onSubmit)
                 
                 if !text.isEmpty {
                     Button {
                         text = ""
+                        isFocused = true
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.secondary)
@@ -165,10 +168,13 @@ struct DictionarySearchBar: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(10)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 12)
             .glassEffect(.regular.interactive())
             .contentShape(Capsule())
             .padding(.horizontal, 20)
+            .padding(.bottom, 4)
+            .onAppear { isFocused = true }
         }
         else {
             HStack(spacing: 10) {
@@ -180,11 +186,13 @@ struct DictionarySearchBar: View {
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .submitLabel(.search)
+                    .focused($isFocused)
                     .onSubmit(onSubmit)
                 
                 if !text.isEmpty {
                     Button {
                         text = ""
+                        isFocused = true
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.secondary)
@@ -192,10 +200,13 @@ struct DictionarySearchBar: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(10)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 12)
             .background(.ultraThinMaterial, in: Capsule())
             .contentShape(Capsule())
             .padding(.horizontal, 20)
+            .padding(.bottom, 4)
+            .onAppear { isFocused = true }
         }
     }
 }
