@@ -59,6 +59,8 @@ class ProxyHandler: NSObject, WKURLSchemeHandler {
 }
 
 struct PopupWebView: UIViewRepresentable {
+    let dictionaryManager = DictionaryManager.shared
+    let fontManager = FontManager.shared
     let content: String
     var onMine: (([String: String]) -> Void)? = nil
     
@@ -70,13 +72,13 @@ struct PopupWebView: UIViewRepresentable {
         return js
     }()
     
-    private static let popupCss: String = {
+    private var popupCss: String {
         guard let url = Bundle.main.url(forResource: "popup", withExtension: "css"),
               let css = try? String(contentsOf: url, encoding: .utf8) else {
             return ""
         }
-        return css
-    }()
+        return css + dictionaryManager.customCSS + fontManager.fontfaceCSS
+    }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(onMine: onMine)
@@ -137,7 +139,7 @@ struct PopupWebView: UIViewRepresentable {
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-            <style>\(Self.popupCss)</style>
+            <style>\(popupCss)</style>
             <script>\(Self.popupJs)</script>
         </head>
         <body>

@@ -12,6 +12,30 @@ class FontManager {
     static let shared = FontManager()
     static let defaultFonts = ["Hiragino Mincho ProN", "Hiragino Kaku Gothic ProN"]
     
+    var allFonts: [String] {
+        let importedFonts = (try? FontManager.shared.getFontsFromStorage())?.map { $0.deletingPathExtension().lastPathComponent } ?? []
+        return FontManager.defaultFonts + importedFonts
+    }
+    
+    var fontfaceCSS: String {
+        var fontFaceCss = ""
+        for fontName in allFonts {
+            if !isDefaultFont(name: fontName) {
+                if let fontURL = try? getFontUrl(name: fontName)
+                {
+                    let fontType = fontURL.pathExtension.lowercased()
+                    fontFaceCss += """
+                @font-face {
+                    font-family: '\(fontName)';
+                    src: url('\(try! FontManager.getFontsDirectory().lastPathComponent)/\(fontURL.lastPathComponent)') format('\(fontType == "otf" ? "opentype" : "truetype")');
+                }
+                """
+                }
+            }
+        }
+        return fontFaceCss
+    }
+    
     private static func getFontsDirectory() throws -> URL {
         try BookStorage.getDocumentsDirectory().appendingPathComponent("Fonts")
     }

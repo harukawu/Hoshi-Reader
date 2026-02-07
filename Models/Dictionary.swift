@@ -28,11 +28,34 @@ struct DictionaryConfig: Codable {
     var termDictionaries: [DictionaryEntry]
     var frequencyDictionaries: [DictionaryEntry]
     var pitchDictionaries: [DictionaryEntry]
+    var customCSS: String
+    
+    init(termDictionaries: [DictionaryEntry], frequencyDictionaries: [DictionaryEntry], pitchDictionaries: [DictionaryEntry], customCSS: String) {
+        self.termDictionaries = termDictionaries
+        self.frequencyDictionaries = frequencyDictionaries
+        self.pitchDictionaries = pitchDictionaries
+        self.customCSS = customCSS
+    }
     
     struct DictionaryEntry: Codable {
         let fileName: String
         var isEnabled: Bool
         var order: Int
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case termDictionaries
+        case frequencyDictionaries
+        case pitchDictionaries
+        case customCSS
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.termDictionaries = try container.decode([DictionaryEntry].self, forKey: .termDictionaries)
+        self.frequencyDictionaries = try container.decode([DictionaryEntry].self, forKey: .frequencyDictionaries)
+        self.pitchDictionaries = try container.decode([DictionaryEntry].self, forKey: .pitchDictionaries)
+        self.customCSS = try container.decodeIfPresent(String.self, forKey: .customCSS) ?? ""
     }
 }
 

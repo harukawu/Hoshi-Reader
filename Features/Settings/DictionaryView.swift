@@ -14,6 +14,7 @@ struct DictionaryView: View {
     @State private var dictionaryManager = DictionaryManager.shared
     @State private var isImporting = false
     @State private var importType: DictionaryType = .term
+    @State private var showCSSEditor = false
     
     var body: some View {
         List {
@@ -82,8 +83,14 @@ struct DictionaryView: View {
         .onAppear {
             dictionaryManager.loadDictionaries()
         }
+        .sheet(isPresented: $showCSSEditor, content: {
+            DictionaryDetailSettingView(onDismiss: {showCSSEditor = false})
+        })
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button("", systemImage: "paintbrush") {
+                    showCSSEditor = true
+                }
                 Menu {
                     Button {
                         importType = .term
@@ -131,5 +138,46 @@ struct DictionaryView: View {
         } message: {
             Text(dictionaryManager.errorMessage)
         }
+    }
+}
+
+// MARK: - Per dictionary detail settings model view
+
+struct DictionaryDetailSettingView: View {
+    private let dictionaryManager = DictionaryManager.shared
+    @State private var isFocus = false
+    @State private var customCSS: String
+    let onDismiss: (() -> Void)?
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Custom CSS")
+                    .bold()
+                    .font(.title)
+                
+                Spacer()
+                
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title)
+                    .contentShape(.rect)
+                    .onTapGesture {
+                        onDismiss?()
+                    }
+            }
+            CSSEditorView(text: $customCSS, isFocus: $isFocus)
+                .cornerRadius(8)
+        }
+        .onDisappear(perform: {
+            dictionaryManager.updateCustomCSS(newCSS: customCSS)
+        })
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
+    }
+    
+    init(onDismiss: (() -> Void)?) {
+        self.onDismiss = onDismiss
+        self._customCSS = State(initialValue: DictionaryManager.shared.customCSS)
     }
 }

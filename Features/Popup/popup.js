@@ -820,7 +820,7 @@ function createGlossarySection(dictName, contents, isFirst) {
     details.appendChild(summary);
 
     const shadowHost = document.createElement('div');
-    const shadow = shadowHost.attachShadow({ mode: 'open' });
+    shadowHost.setAttribute('data-dictionary', dictName)
     const compactCss = window.compactGlossaries ? `
         ul[data-sc-content="glossary"],
         ol[data-sc-content="glossary"],
@@ -848,50 +848,51 @@ function createGlossarySection(dictName, contents, isFirst) {
     ` : '';
 
     const dictStyle = window.dictionaryStyles?.[dictName] ?? '';
-    shadow.appendChild(el('style', {
+    shadowHost.appendChild(el('style', {
         textContent: `
-            :host {
+            [data-dictionary="${dictName}"] {
                 display: block;
                 font-size: 14px;
                 line-height: 1.4;
                 padding: 0;
+            
+                ul, ol {
+                    padding-left: 1.2em;
+                    margin: 2px 0; 
+                }
+                li { 
+                    margin: 1px 0;
+                }
+                .glossary-tags {
+                    display: inline-flex;
+                    gap: 4px;
+                    flex-wrap: wrap;
+                    margin: 0 0 2px 0;
+                }
+                .glossary-tag {
+                    font-size: 10px;
+                    padding: 2px 4px;
+                    background-color: rgba(128, 128, 128, 0.2);
+                    border-radius: 4px;
+                    line-height: 1;
+                }
+                table {
+                    table-layout: auto;
+                    border-collapse: collapse;
+                }
+                th, td {
+                    border: 1px solid currentColor;
+                    padding: 0.25em;
+                    vertical-align: top;
+                }
+                th {
+                    font-weight: bold;
+                }
+                @media (prefers-color-scheme: light) { color: #000; }
+                @media (prefers-color-scheme: dark) { color: #fff; }
+                ${dictStyle}
+                ${compactCss}
             }
-            ul, ol {
-                padding-left: 1.2em;
-                margin: 2px 0; 
-            }
-            li { 
-                margin: 1px 0;
-            }
-            .glossary-tags {
-                display: inline-flex;
-                gap: 4px;
-                flex-wrap: wrap;
-                margin: 0 0 2px 0;
-            }
-            .glossary-tag {
-                font-size: 10px;
-                padding: 2px 4px;
-                background-color: rgba(128, 128, 128, 0.2);
-                border-radius: 4px;
-                line-height: 1;
-            }
-            table {
-                table-layout: auto;
-                border-collapse: collapse;
-            }
-            th, td {
-                border: 1px solid currentColor;
-                padding: 0.25em;
-                vertical-align: top;
-            }
-            th {
-                font-weight: bold;
-            }
-            @media (prefers-color-scheme: light) { :host { color: #000; } }
-            @media (prefers-color-scheme: dark) { :host { color: #fff; } }
-            ${dictStyle}
-            ${compactCss}
         `.trim()
     }));
     
@@ -913,7 +914,7 @@ function createGlossarySection(dictName, contents, isFirst) {
 
     const termTagsRow = createGlossaryTags(termTags);
     if (termTagsRow) {
-        shadow.appendChild(termTagsRow);
+        shadowHost.appendChild(termTagsRow);
     }
 
     if (contents.length > 1) {
@@ -927,7 +928,7 @@ function createGlossarySection(dictName, contents, isFirst) {
             renderContent(li, item.content);
             ol.appendChild(li);
         });
-        shadow.appendChild(ol);
+        shadowHost.appendChild(ol);
     } else {
         contents.forEach((item, idx) => {
             const wrapper = el('div');
@@ -936,7 +937,7 @@ function createGlossarySection(dictName, contents, isFirst) {
                 wrapper.appendChild(tags);
             }
             renderContent(wrapper, item.content);
-            shadow.appendChild(wrapper);
+            shadowHost.appendChild(wrapper);
         });
     }
 
