@@ -83,9 +83,9 @@ struct DictionaryView: View {
         .onAppear {
             dictionaryManager.loadDictionaries()
         }
-        .sheet(isPresented: $showCSSEditor, content: {
-            DictionaryDetailSettingView(onDismiss: {showCSSEditor = false})
-        })
+        .sheet(isPresented: $showCSSEditor) {
+            DictionaryDetailSettingView()
+        }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button("", systemImage: "paintbrush") {
@@ -141,38 +141,27 @@ struct DictionaryView: View {
     }
 }
 
-// MARK: - Per dictionary detail settings model view
-
 struct DictionaryDetailSettingView: View {
-    @State private var isFocus = false
     @Environment(UserConfig.self) var userConfig
-    let onDismiss: (() -> Void)?
-    
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
-        VStack {
-            HStack {
-                Text("Custom CSS")
-                    .bold()
-                    .font(.title)
-                
-                Spacer()
-                
-                Image(systemName: "xmark.circle.fill")
-                    .font(.title)
-                    .contentShape(.rect)
-                    .onTapGesture {
-                        onDismiss?()
+        @Bindable var userConfig = userConfig
+        NavigationStack {
+            CSSEditorView(text: $userConfig.customCSS)
+                .padding(20)
+                .background(Color(.secondarySystemBackground).ignoresSafeArea())
+                .navigationTitle("Custom CSS")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
                     }
-            }
-            CSSEditorView(text: Bindable(userConfig).customCSS, isFocus: $isFocus)
-                .cornerRadius(8)
+                }
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.secondarySystemBackground).ignoresSafeArea())
-    }
-    
-    init(onDismiss: (() -> Void)?) {
-        self.onDismiss = onDismiss
     }
 }
