@@ -133,7 +133,9 @@ struct ReaderView: View {
                         documentTitle: viewModel.document.title
                     )
                     .simultaneousGesture(DragGesture().onEnded({ value in
-                        if (abs(value.translation.width) > 40) && (abs(value.translation.height) < 20) {
+                        if userConfig.popupSwipeToDismiss &&
+                            (abs(value.translation.width) > CGFloat(userConfig.popupSwipeThreshold)) &&
+                            (abs(value.translation.height) < 20) {
                             viewModel.closePopup()
                         }
                     }))
