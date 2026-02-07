@@ -144,9 +144,8 @@ struct DictionaryView: View {
 // MARK: - Per dictionary detail settings model view
 
 struct DictionaryDetailSettingView: View {
-    private let dictionaryManager = DictionaryManager.shared
     @State private var isFocus = false
-    @State private var customCSS: String
+    @Environment(UserConfig.self) var userConfig
     let onDismiss: (() -> Void)?
     
     var body: some View {
@@ -165,12 +164,9 @@ struct DictionaryDetailSettingView: View {
                         onDismiss?()
                     }
             }
-            CSSEditorView(text: $customCSS, isFocus: $isFocus)
+            CSSEditorView(text: Bindable(userConfig).customCSS, isFocus: $isFocus)
                 .cornerRadius(8)
         }
-        .onDisappear(perform: {
-            dictionaryManager.updateCustomCSS(newCSS: customCSS)
-        })
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
@@ -178,6 +174,5 @@ struct DictionaryDetailSettingView: View {
     
     init(onDismiss: (() -> Void)?) {
         self.onDismiss = onDismiss
-        self._customCSS = State(initialValue: DictionaryManager.shared.customCSS)
     }
 }

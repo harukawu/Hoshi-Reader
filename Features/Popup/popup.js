@@ -819,8 +819,8 @@ function createGlossarySection(dictName, contents, isFirst) {
     summary.appendChild(el('span', { className: 'dict-name', textContent: dictName }));
     details.appendChild(summary);
 
-    const shadowHost = document.createElement('div');
-    shadowHost.setAttribute('data-dictionary', dictName)
+    const dictWrapper = document.createElement('div');
+    dictWrapper.setAttribute('data-dictionary', dictName)
     const compactCss = window.compactGlossaries ? `
         ul[data-sc-content="glossary"],
         ol[data-sc-content="glossary"],
@@ -848,7 +848,7 @@ function createGlossarySection(dictName, contents, isFirst) {
     ` : '';
 
     const dictStyle = window.dictionaryStyles?.[dictName] ?? '';
-    shadowHost.appendChild(el('style', {
+    dictWrapper.appendChild(el('style', {
         textContent: `
             [data-dictionary="${dictName}"] {
                 display: block;
@@ -914,7 +914,7 @@ function createGlossarySection(dictName, contents, isFirst) {
 
     const termTagsRow = createGlossaryTags(termTags);
     if (termTagsRow) {
-        shadowHost.appendChild(termTagsRow);
+        dictWrapper.appendChild(termTagsRow);
     }
 
     if (contents.length > 1) {
@@ -928,7 +928,7 @@ function createGlossarySection(dictName, contents, isFirst) {
             renderContent(li, item.content);
             ol.appendChild(li);
         });
-        shadowHost.appendChild(ol);
+        dictWrapper.appendChild(ol);
     } else {
         contents.forEach((item, idx) => {
             const wrapper = el('div');
@@ -937,11 +937,11 @@ function createGlossarySection(dictName, contents, isFirst) {
                 wrapper.appendChild(tags);
             }
             renderContent(wrapper, item.content);
-            shadowHost.appendChild(wrapper);
+            dictWrapper.appendChild(wrapper);
         });
     }
 
-    details.appendChild(shadowHost);
+    details.appendChild(dictWrapper);
     return details;
 }
 

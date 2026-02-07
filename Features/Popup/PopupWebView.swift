@@ -95,6 +95,7 @@ class DocumentResourceHandler: NSObject, WKURLSchemeHandler {
 }
 
 struct PopupWebView: UIViewRepresentable {
+    @Environment(UserConfig.self) var userConfig
     let dictionaryManager = DictionaryManager.shared
     let fontManager = FontManager.shared
     let content: String
@@ -108,13 +109,13 @@ struct PopupWebView: UIViewRepresentable {
         return js
     }()
     
-    private var popupCss: String {
+    private static let popupCss: String = {
         guard let url = Bundle.main.url(forResource: "popup", withExtension: "css"),
               let css = try? String(contentsOf: url, encoding: .utf8) else {
             return ""
         }
-        return css + dictionaryManager.customCSS + fontManager.fontfaceCSS
-    }
+        return css
+    }()
     
     func makeCoordinator() -> Coordinator {
         Coordinator(onMine: onMine)
@@ -176,7 +177,11 @@ struct PopupWebView: UIViewRepresentable {
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-            <style>\(popupCss)</style>
+            <style>
+                \(Self.popupCss)
+                \(userConfig.customCSS)
+                \(fontManager.fontfaceCSS)
+            </style>
             <script>\(Self.popupJs)</script>
         </head>
         <body>

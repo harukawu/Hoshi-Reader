@@ -138,6 +138,12 @@ class UserConfig {
         isDefault: true
     )
     
+    var customCSS: String {
+        didSet {
+            UserDefaults.standard.set(customCSS, forKey: "customCSS")
+        }
+    }
+    
     init() {
         let defaults = UserDefaults.standard
         
@@ -180,6 +186,8 @@ class UserConfig {
         } else {
             self.audioSources = [UserConfig.defaultAudioSource]
         }
+        
+        self.customCSS = defaults.string(forKey: "customCSS") ?? ""
     }
     
     private static func saveColor(_ color: Color, key: String) {

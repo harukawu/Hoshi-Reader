@@ -25,7 +25,6 @@ class DictionaryManager {
     private(set) var termDictionaries: [DictionaryInfo] = []
     private(set) var frequencyDictionaries: [DictionaryInfo] = []
     private(set) var pitchDictionaries: [DictionaryInfo] = []
-    private(set) var customCSS: String = ""
     private(set) var isImporting = false
     var shouldShowError = false
     var errorMessage = ""
@@ -45,7 +44,6 @@ class DictionaryManager {
             termDictionaries = collectDictionaries(storedDicts: storedTermDicts, configDicts: config.termDictionaries)
             frequencyDictionaries = collectDictionaries(storedDicts: storedFreqDicts, configDicts: config.frequencyDictionaries)
             pitchDictionaries = collectDictionaries(storedDicts: storedPitchDicts, configDicts: config.pitchDictionaries)
-            customCSS = config.customCSS
         } else {
             termDictionaries = storedTermDicts
             frequencyDictionaries = storedFreqDicts
@@ -131,8 +129,7 @@ class DictionaryManager {
                     isEnabled: $0.isEnabled,
                     order: $0.order
                 )
-            },
-            customCSS: customCSS
+            }
         )
         
         guard let configURL = try? Self.getDictionariesDirectory()
@@ -202,12 +199,6 @@ class DictionaryManager {
         case .pitch:
             pitchDictionaries[index].isEnabled = enabled
         }
-        saveDictionaryConfig()
-        rebuildLookupQuery()
-    }
-    
-    func updateCustomCSS(newCSS: String) {
-        customCSS = newCSS
         saveDictionaryConfig()
         rebuildLookupQuery()
     }

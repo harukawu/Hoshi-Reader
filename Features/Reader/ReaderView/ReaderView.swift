@@ -133,7 +133,7 @@ struct ReaderView: View {
                         documentTitle: viewModel.document.title
                     )
                     .simultaneousGesture(DragGesture().onEnded({ value in
-                        if abs(value.translation.width) > 100 {
+                        if (abs(value.translation.width) > 30) && (abs(value.translation.height) < 30) {
                             viewModel.closePopup()
                         }
                     }))
