@@ -24,7 +24,13 @@ let package = Package(
                 .product(name: "SwiftUIIntrospect", package: "swiftui-introspect")
             ],
             resources: [
-                .process("Resources")
+                .process("Resources"),
+                .process("Features/Popup/popup.css"),
+                .process("Features/Popup/popup.js"),
+                .process("Features/Reader/Highlights/highlights.js"),
+                .process("Features/Reader/ReaderWebView/reader.js"),
+                .process("Features/Reader/ReaderWebView/selection.js"),
+                .process("Features/Reader/ScrollReaderWebView/scrollreader.js"),
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),

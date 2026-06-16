@@ -270,7 +270,7 @@ struct ScrollReaderWebView: UIViewRepresentable {
         }
         
         private var selectionJs: String {
-            guard let url = Bundle.main.url(forResource: "selection", withExtension: "js"),
+            guard let url = Bundle.module.url(forResource: "selection", withExtension: "js"),
                   let js = try? String(contentsOf: url, encoding: String.Encoding.utf8) else {
                 return ""
             }
@@ -278,7 +278,7 @@ struct ScrollReaderWebView: UIViewRepresentable {
         }
         
         private var readerJs: String {
-            guard let url = Bundle.main.url(forResource: "scrollreader", withExtension: "js"),
+            guard let url = Bundle.module.url(forResource: "scrollreader", withExtension: "js"),
                   let js = try? String(contentsOf: url, encoding: String.Encoding.utf8) else {
                 return ""
             }
@@ -286,7 +286,7 @@ struct ScrollReaderWebView: UIViewRepresentable {
         }
         
         private var highlightsJs: String {
-            guard let url = Bundle.main.url(forResource: "highlights", withExtension: "js"),
+            guard let url = Bundle.module.url(forResource: "highlights", withExtension: "js"),
                   let js = try? String(contentsOf: url, encoding: String.Encoding.utf8) else {
                 return ""
             }

@@ -362,7 +362,7 @@ struct ReaderWebView: UIViewRepresentable {
         }
         
         private var selectionJs: String {
-            guard let url = Bundle.main.url(forResource: "selection", withExtension: "js"),
+            guard let url = Bundle.module.url(forResource: "selection", withExtension: "js"),
                   let js = try? String(contentsOf: url, encoding: String.Encoding.utf8) else {
                 return ""
             }
@@ -370,7 +370,7 @@ struct ReaderWebView: UIViewRepresentable {
         }
         
         private var readerJs: String {
-            guard let url = Bundle.main.url(forResource: "reader", withExtension: "js"),
+            guard let url = Bundle.module.url(forResource: "reader", withExtension: "js"),
                   let js = try? String(contentsOf: url, encoding: String.Encoding.utf8) else {
                 return ""
             }
@@ -378,7 +378,7 @@ struct ReaderWebView: UIViewRepresentable {
         }
         
         private var highlightsJs: String {
-            guard let url = Bundle.main.url(forResource: "highlights", withExtension: "js"),
+            guard let url = Bundle.module.url(forResource: "highlights", withExtension: "js"),
                   let js = try? String(contentsOf: url, encoding: String.Encoding.utf8) else {
                 return ""
             }
