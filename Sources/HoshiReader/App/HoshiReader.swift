@@ -10,7 +10,6 @@ import SwiftUI
 import UIKit
 import WebKit
 
-@main
 struct HoshiReaderApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
