@@ -233,7 +233,7 @@ struct PopupWebView: UIViewRepresentable {
             context.coordinator.currentContent = content
             context.coordinator.wasLoaded = true
             let html = constructHtml(content: content)
-            webView.loadHTMLString(html, baseURL: Bundle.main.resourceURL)
+            webView.loadHTMLString(html, baseURL: Bundle.module.resourceURL)
         }
         
         if context.coordinator.clearSelection != clearSelection {
