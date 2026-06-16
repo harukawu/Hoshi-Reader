@@ -12,15 +12,24 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Manhhao/hoshidicts.git", branch: "main"),
+        .package(url: "https://github.com/tadija/AEXML", from: "4.7.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect", from: "26.0.0"),
-        .package(name: "EPUBKit", path: "Libraries/EPUBKit")
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.20")
     ],
     targets: [
+        .target(
+            name: "EPUBKit",
+            dependencies: [
+                .product(name: "AEXML", package: "aexml"),
+                .product(name: "ZIPFoundation", package: "ZIPFoundation")
+            ],
+            path: "Libraries/EPUBKit/Sources/EPUBKit"
+        ),
         .target(
             name: "HoshiReader",
             dependencies: [
                 .product(name: "CHoshiDicts", package: "hoshidicts"),
-                .product(name: "EPUBKit", package: "EPUBKit"),
+                "EPUBKit",
                 .product(name: "SwiftUIIntrospect", package: "swiftui-introspect")
             ],
             resources: [
