@@ -9,7 +9,7 @@
 import UniformTypeIdentifiers
 import SwiftUI
 
-struct DictionaryView: View {
+public struct DictionaryView: View {
     @Environment(UserConfig.self) private var userConfig
     @State private var dictionaryManager = DictionaryManager.shared
     @State private var isImporting = false
@@ -18,6 +18,8 @@ struct DictionaryView: View {
     @State private var showUpdateConfirmation = false
     @State private var selectedType: DictionaryType = .term
     
+    public init() {}
+
     private var dictionaries: [DictionaryInfo] {
         switch selectedType {
         case .term: return dictionaryManager.termDictionaries
@@ -45,7 +47,7 @@ struct DictionaryView: View {
         }
     }
     
-    var body: some View {
+    public var body: some View {
         List {
             Section {
                 Button {

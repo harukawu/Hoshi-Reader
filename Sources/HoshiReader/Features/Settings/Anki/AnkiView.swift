@@ -9,7 +9,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct AnkiView: View {
+public struct AnkiView: View {
     @State private var ankiManager = AnkiManager.shared
     @State private var dictionaryManager = DictionaryManager.shared
     @State private var isImporting = false
@@ -17,7 +17,9 @@ struct AnkiView: View {
     
     private let maxFormats = 3
     
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         List {
             Section {
                 if ankiManager.useAnkiConnect && !ankiManager.isConnected {

@@ -9,10 +9,12 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct AnkiConnectView: View {
+public struct AnkiConnectView: View {
     @State private var ankiManager = AnkiManager.shared
     
-    var body: some View {
+    public init() {}
+    
+    public var body: some View {
         List {
             Section {
                 Toggle(isOn: $ankiManager.useAnkiConnect) {

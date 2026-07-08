@@ -78,7 +78,7 @@ enum CoverMode: String, CaseIterable, Codable {
 }
 
 @Observable
-class UserConfig {
+public class UserConfig {
     var bookshelfSortOption: SortOption {
         didSet { UserDefaults.standard.set(bookshelfSortOption.rawValue, forKey: "bookshelfSortOption") }
     }
@@ -455,7 +455,7 @@ class UserConfig {
         didSet { Self.saveColor(sasayakiDarkBackgroundColor, key: "sasayakiDarkBackgroundColor") }
     }
     
-    init() {
+    public init() {
         let defaults = UserDefaults.standard
         
         self.bookshelfSortOption = defaults.string(forKey: "bookshelfSortOption")
