@@ -130,9 +130,9 @@ enum Handlebars: String, CaseIterable {
     case pitchCategories = "{pitch-accent-categories}"
     case pitchAccentGraphs = "{pitch-accent-graphs}"
     case pitchAccentGraphsFirst = "{pitch-accent-graphs-first}"
-    case documentTitle = "{document-title}"
-    case bookCover = "{book-cover}"
-    case sasayakiAudio = "{sasayaki-audio}"
+    case documentTitle = "{video-title}"
+    case bookCover = "{video-image}"
+    case sasayakiAudio = "{video-audio}"
     
     static let singleGlossaryPrefix = "{single-glossary-"
     

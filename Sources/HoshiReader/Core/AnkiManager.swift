@@ -68,7 +68,7 @@ class AnkiManager {
     
     static let wordAddedNotification = Notification.Name("hoshiWordAdded")
     
-    private static let scheme = "hoshi://"
+    private static let scheme = "hana://"
     private static let fetchCallback = scheme + "ankiFetch"
     private static let successCallback = scheme + "ankiSuccess"
     

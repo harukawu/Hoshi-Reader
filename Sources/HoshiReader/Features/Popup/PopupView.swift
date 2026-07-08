@@ -118,6 +118,7 @@ struct PopupView: View {
     let coverURL: URL?
     let documentTitle: String?
     var clearSelection: Bool
+    var mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?
     var onTextSelected: ((SelectionData) -> Int?)?
     var onTapOutside: (() -> Void)?
     var onSwipeDismiss: (() -> Void)?
@@ -150,6 +151,7 @@ struct PopupView: View {
         coverURL: URL?,
         documentTitle: String?,
         clearSelection: Bool,
+        mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)? = nil,
         onTextSelected: ((SelectionData) -> Int?)? = nil,
         onTapOutside: (() -> Void)? = nil,
         onSwipeDismiss: (() -> Void)? = nil,
@@ -172,6 +174,7 @@ struct PopupView: View {
         self.coverURL = coverURL
         self.documentTitle = documentTitle
         self.clearSelection = clearSelection
+        self.mediaProvider = mediaProvider
         self.onTextSelected = onTextSelected
         self.onTapOutside = onTapOutside
         self.onSwipeDismiss = onSwipeDismiss
@@ -380,6 +383,25 @@ struct PopupView: View {
     }
     
     private func mineEntry(content: [String: String], sentence: String, clozeOffset: Int?, formatId: UUID) async -> Bool {
+        
+        if let mediaProvider {
+            if let media = try? await mediaProvider(),
+               let audioData = try? Data(contentsOf: media.audioURL, options: .mappedIfSafe) {
+                return await AnkiManager.shared.addNote(
+                    content: content,
+                    context: MiningContext(
+                        sentence: media.sentence ?? sentence,
+                        clozeOffset: clozeOffset,
+                        documentTitle: media.videoTitle,
+                        coverURL: media.imageURL,
+                        sasayakiAudioData: audioData
+                    ),
+                    formatId: formatId
+                )
+            }
+            return false
+        }
+        
         var sasayakiAudioData: Data?
         if AnkiManager.shared.needsSasayakiAudio, let cue = sasayakiCue, let player = sasayakiPlayer, player.hasAudio {
             sasayakiAudioData = await player.cueSentenceAudio(cue, sentence: sentence)
