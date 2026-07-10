@@ -52,7 +52,7 @@ public struct AnkiView: View {
                     }
                     if !ankiManager.useAnkiConnect && ankiManager.isConnected {
                         if !ankiManager.useAnkiConnect {
-                            Text("Importing a .colpkg/.apkg backup from Anki will allow Hoshi Reader to check for duplicates immediately. It's recommended to do this periodically to reduce drift.", tableName: "Dictionaries")
+                            Text("Importing a .colpkg/.apkg backup from Anki will allow Hana to check for duplicates immediately. It's recommended to do this periodically to reduce drift.", tableName: "Dictionaries")
                         }
                     }
                 }

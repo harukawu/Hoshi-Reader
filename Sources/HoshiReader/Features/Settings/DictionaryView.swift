@@ -118,9 +118,11 @@ public struct DictionaryView: View {
             }
             
             Section {
+                /*
                 Toggle(isOn: Bindable(userConfig).dictionaryTabDefault) {
                     Text("Default to Dictionary Tab", tableName: "Dictionaries")
                 }
+                */
                 NavigationLink {
                     DictionarySettingsView()
                 } label: {
