@@ -72,6 +72,7 @@ public struct DictionaryView: View {
             } footer: {
                 Text("Yomitan term, frequency and pitch dictionaries (.zip) are supported", tableName: "Dictionaries")
             }
+            .hanaSettingsRow()
             
             if (dictionaryManager.updatableDictionaries.count > 0) {
                 Section {
@@ -113,6 +114,7 @@ public struct DictionaryView: View {
                 } header: {
                     Text("Updates", tableName: "Dictionaries")
                 }
+                .hanaSettingsRow()
             }
             
             Section {
@@ -125,6 +127,7 @@ public struct DictionaryView: View {
                     Text("Settings", tableName: "Dictionaries")
                 }
             }
+            .hanaSettingsRow()
             
             Section {
                 ForEach(dictionaries) { dict in
@@ -160,7 +163,9 @@ public struct DictionaryView: View {
                 .listRowInsets(EdgeInsets())
                 .padding(.bottom, 12)
             }
+            .hanaSettingsRow()
         }
+        .hanaSettingsScreen()
         .sheet(isPresented: $showCSSEditor) {
             DictionaryDetailSettingView()
         }
@@ -246,6 +251,7 @@ struct DictionarySettingsView: View {
             } header: {
                 Text("Lookup", tableName: "Dictionaries")
             }
+            .hanaSettingsRow()
             
             Section {
                 Picker(selection: Bindable(userConfig).collapseMode) {
@@ -270,6 +276,7 @@ struct DictionarySettingsView: View {
             } header: {
                 Text("Collapse Dictionaries", tableName: "Dictionaries")
             }
+            .hanaSettingsRow()
             
             Section {
                 VStack {
@@ -299,7 +306,9 @@ struct DictionarySettingsView: View {
             } header: {
                 Text("Behaviour", tableName: "Dictionaries")
             }
+            .hanaSettingsRow()
         }
+        .hanaSettingsScreen()
         .navigationTitle(String(localized: "Settings", table: "Dictionaries"))
         .navigationBarTitleDisplayMode(.inline)
     }

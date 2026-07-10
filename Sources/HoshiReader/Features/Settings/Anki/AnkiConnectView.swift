@@ -24,6 +24,8 @@ public struct AnkiConnectView: View {
             } footer: {
                 Text("This will replace AnkiMobile callbacks with AnkiConnect requests.", tableName: "Dictionaries")
             }
+            .hanaSettingsRow()
+            
             if ankiManager.useAnkiConnect {
                 Section {
                     VStack(alignment: .leading, spacing: 3) {
@@ -54,6 +56,7 @@ public struct AnkiConnectView: View {
                         Text("Status: \(connectionStatus)", tableName: "Dictionaries")
                     }
                 }
+                .hanaSettingsRow()
             }
             
             if ankiManager.useAnkiConnect && ankiManager.isConnected {
@@ -94,8 +97,10 @@ public struct AnkiConnectView: View {
                 } header: {
                     Text("Settings", tableName: "Dictionaries")
                 }
+                .hanaSettingsRow()
             }
         }
+        .hanaSettingsScreen()
         .navigationTitle(String(localized: "AnkiConnect", table: "Dictionaries"))
     }
     

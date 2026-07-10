@@ -40,6 +40,7 @@ public struct HoshiBackupView: View {
             } footer: {
                 Text("Restoring will overwrite the current collection.")
             }
+            .hanaSettingsRow()
             
             if isHoshiAvailable {
                 Section {
@@ -51,8 +52,10 @@ public struct HoshiBackupView: View {
                 } footer: {
                     Text("Open Hoshi Reader, export dictionary data and import to Hana")
                 }
+                .hanaSettingsRow()
             }
         }
+        .hanaSettingsScreen()
         .task {
             isHoshiAvailable = UIApplication.shared.canOpenURL(Self.hoshiURL)
         }

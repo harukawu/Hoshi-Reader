@@ -44,6 +44,7 @@ public struct AudioView: View {
                     userConfig.audioSources.move(fromOffsets: source, toOffset: destination)
                 }
             }
+            .hanaSettingsRow()
             
             Section {
                 TextField("Name", text: $nameInput)
@@ -70,6 +71,7 @@ public struct AudioView: View {
             } footer: {
                 Text("Yomitan JSON audio sources are supported")
             }
+            .hanaSettingsRow()
             
             Section {
                 Toggle("Auto-play on Lookup", isOn: $userConfig.audioEnableAutoplay)
@@ -79,6 +81,7 @@ public struct AudioView: View {
                     Text("Keep Volume").tag(AudioPlaybackMode.mix)
                 }
             }
+            .hanaSettingsRow()
             
             Section {
                 Toggle("Enable", isOn: $userConfig.enableLocalAudio)
@@ -97,7 +100,9 @@ public struct AudioView: View {
             } footer: {
                 Text("Import a local audio database for offline dictionary audio. The local audio source is automatically added when enabled.")
             }
+            .hanaSettingsRow()
         }
+        .hanaSettingsScreen()
         .fileImporter(
             isPresented: $isImporting,
             allowedContentTypes: [UTType(filenameExtension: "db")!]

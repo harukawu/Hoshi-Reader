@@ -86,6 +86,7 @@ struct AnkiCardFormatView: View {
                 } header: {
                     Text("Config", tableName: "Dictionaries")
                 }
+                .hanaSettingsRow()
                 
                 if let typeName = ankiManager.cardFormats[index].selectedNoteType,
                    let noteType = ankiManager.availableNoteTypes.first(where: { $0.name == typeName }) {
@@ -151,9 +152,11 @@ struct AnkiCardFormatView: View {
                     } header: {
                         Text("Fields", tableName: "Dictionaries")
                     }
+                    .hanaSettingsRow()
                 }
             }
         }
+        .hanaSettingsScreen()
         .navigationTitle(formatIndex.map { ankiManager.cardFormats[$0].name } ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear { ankiManager.save() }

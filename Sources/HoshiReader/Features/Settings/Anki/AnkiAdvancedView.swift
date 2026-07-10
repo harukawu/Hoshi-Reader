@@ -41,6 +41,7 @@ struct AnkiAdvancedView: View {
                     Text("Show All Handlebars", tableName: "Dictionaries")
                 }
             }
+            .hanaSettingsRow()
             
             Section {
                 VStack(alignment: .leading, spacing: 3) {
@@ -81,6 +82,7 @@ struct AnkiAdvancedView: View {
                     }
                 }
             }
+            .hanaSettingsRow()
             
             Section {
                 ForEach(dictionaryManager.termDictionaries) { dict in
@@ -106,7 +108,9 @@ struct AnkiAdvancedView: View {
             } header: {
                 Text("Categorize Dictionaries", tableName: "Dictionaries")
             }
+            .hanaSettingsRow()
         }
+        .hanaSettingsScreen()
         .navigationTitle(String(localized: "Advanced", table: "Dictionaries"))
         .navigationBarTitleDisplayMode(.inline)
     }

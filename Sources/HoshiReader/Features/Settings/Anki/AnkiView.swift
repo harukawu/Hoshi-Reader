@@ -69,6 +69,7 @@ public struct AnkiView: View {
                     }
                 }
             }
+            .hanaSettingsRow()
             
             if ankiManager.isConnected {
                 Section {
@@ -101,6 +102,7 @@ public struct AnkiView: View {
                 } header: {
                     Text("Formats", tableName: "Dictionaries")
                 }
+                .hanaSettingsRow()
                 
                 Section {
                     Toggle(isOn: $ankiManager.allowDupes) {
@@ -126,8 +128,10 @@ public struct AnkiView: View {
                 } header: {
                     Text("Settings", tableName: "Dictionaries")
                 }
+                .hanaSettingsRow()
             }
         }
+        .hanaSettingsScreen()
         .navigationTitle(String(localized: "Anki", table: "Dictionaries"))
         .onDisappear { ankiManager.save() }
         .alert(String(localized: "Fetch from Anki?", table: "Dictionaries"), isPresented: $confirmFetch) {
