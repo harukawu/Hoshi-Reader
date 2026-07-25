@@ -12,6 +12,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Manhhao/hoshidicts.git", branch: "main"),
+        .package(url: "https://github.com/hidden-spectrum/SwiftLAME.git", branch: "main"),
         .package(url: "https://github.com/tadija/AEXML", from: "4.7.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect", from: "26.0.0"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.20")
@@ -29,6 +30,7 @@ let package = Package(
             name: "HoshiReader",
             dependencies: [
                 .product(name: "CHoshiDicts", package: "hoshidicts"),
+                .product(name: "SwiftLAME", package: "SwiftLAME"),
                 "EPUBKit",
                 .product(name: "SwiftUIIntrospect", package: "swiftui-introspect")
             ],
@@ -47,5 +49,6 @@ let package = Package(
             ]
         )
     ],
-    swiftLanguageModes: [.v6]
+    swiftLanguageModes: [.v6],
+    cxxLanguageStandard: .cxx2b
 )
