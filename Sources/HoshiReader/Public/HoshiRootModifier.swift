@@ -64,6 +64,11 @@ struct HoshiRootModifier: ViewModifier {
                let expression = components.queryItems?.first(where: { $0.name == "expression" })?.value {
                 AnkiManager.shared.addWord(expression)
             }
+            if #available(anyAppleOS 26, *) {
+                NotificationCenter.default.post(
+                    AnkiSuccessMessage()
+                )
+            }
         }
     }
 }

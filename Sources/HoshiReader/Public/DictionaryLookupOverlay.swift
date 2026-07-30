@@ -20,6 +20,7 @@ public struct DictionaryLookupOverlay: View {
     private let sentence: String
     private let selectionRect: CGRect
     private let mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?
+    private let miningHistorySaver: (((sentence: String, clozeOffset: Int?, title: String, imageExtension: String, formatID: UUID, imageData: Data, audioData: Data, content: [String : String])) -> Void)?
     private let onMatchedUTF16Length: (Int) -> Void
     private let onDismiss: () -> Void
 
@@ -28,6 +29,7 @@ public struct DictionaryLookupOverlay: View {
         sentence: String,
         selectionRect: CGRect,
         mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?,
+        miningHistorySaver: (((sentence: String, clozeOffset: Int?, title: String, imageExtension: String, formatID: UUID, imageData: Data, audioData: Data, content: [String : String])) -> Void)? = nil,
         onMatchedUTF16Length: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
@@ -35,6 +37,7 @@ public struct DictionaryLookupOverlay: View {
         self.sentence = sentence
         self.selectionRect = selectionRect
         self.mediaProvider = mediaProvider
+        self.miningHistorySaver = miningHistorySaver
         self.onMatchedUTF16Length = onMatchedUTF16Length
         self.onDismiss = onDismiss
     }
@@ -64,6 +67,7 @@ public struct DictionaryLookupOverlay: View {
                         documentTitle: nil,
                         clearSelection: popup.clearSelection,
                         mediaProvider: mediaProvider,
+                        miningHistorySaver: miningHistorySaver,
                         onTextSelected: { selection in
                             if let index = popups.firstIndex(where: { $0.id == popupID }) {
                                 closeChildPopups(parent: index)

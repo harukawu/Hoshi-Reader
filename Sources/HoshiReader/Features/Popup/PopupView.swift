@@ -119,6 +119,7 @@ struct PopupView: View {
     let documentTitle: String?
     var clearSelection: Bool
     var mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?
+    var miningHistorySaver: (((sentence: String, clozeOffset: Int?, title: String, imageExtension: String, formatID: UUID, imageData: Data, audioData: Data, content: [String : String])) -> Void)?
     var onTextSelected: ((SelectionData) -> Int?)?
     var onTapOutside: (() -> Void)?
     var onSwipeDismiss: (() -> Void)?
@@ -152,6 +153,7 @@ struct PopupView: View {
         documentTitle: String?,
         clearSelection: Bool,
         mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)? = nil,
+        miningHistorySaver: (((sentence: String, clozeOffset: Int?, title: String, imageExtension: String, formatID: UUID, imageData: Data, audioData: Data, content: [String : String])) -> Void)? = nil,
         onTextSelected: ((SelectionData) -> Int?)? = nil,
         onTapOutside: (() -> Void)? = nil,
         onSwipeDismiss: (() -> Void)? = nil,
@@ -175,6 +177,7 @@ struct PopupView: View {
         self.documentTitle = documentTitle
         self.clearSelection = clearSelection
         self.mediaProvider = mediaProvider
+        self.miningHistorySaver = miningHistorySaver
         self.onTextSelected = onTextSelected
         self.onTapOutside = onTapOutside
         self.onSwipeDismiss = onSwipeDismiss
@@ -387,17 +390,32 @@ struct PopupView: View {
         if let mediaProvider {
             if let media = try? await mediaProvider(),
                let audioData = try? Data(contentsOf: media.audioURL, options: .mappedIfSafe) {
-                return await AnkiManager.shared.addNote(
-                    content: content,
-                    context: MiningContext(
-                        sentence: media.sentence ?? sentence,
-                        clozeOffset: clozeOffset,
-                        documentTitle: media.videoTitle,
-                        coverURL: media.imageURL,
-                        sasayakiAudioData: audioData
-                    ),
-                    formatId: formatId
-                )
+                if let miningHistorySaver, !AnkiManager.shared.useAnkiConnect {
+                    if let imageData = try? Data(contentsOf: media.imageURL, options: .mappedIfSafe) {
+                        miningHistorySaver((
+                            sentence: media.sentence ?? sentence,
+                            clozeOffset: clozeOffset,
+                            title: media.videoTitle,
+                            imageExtension: media.imageURL.pathExtension,
+                            formatID: formatId,
+                            imageData: imageData,
+                            audioData: audioData,
+                            content: content
+                        ))
+                    }
+                } else {
+                    return await AnkiManager.shared.addNote(
+                        content: content,
+                        context: MiningContext(
+                            sentence: media.sentence ?? sentence,
+                            clozeOffset: clozeOffset,
+                            documentTitle: media.videoTitle,
+                            coverURL: media.imageURL,
+                            sasayakiAudioData: audioData
+                        ),
+                        formatId: formatId
+                    )
+                }
             }
             return false
         }

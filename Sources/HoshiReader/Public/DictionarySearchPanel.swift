@@ -27,13 +27,16 @@ public struct DictionarySearchPanel: View {
 
     private let query: String
     private let mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?
+    private let miningHistorySaver: (((sentence: String, clozeOffset: Int?, title: String, imageExtension: String, formatID: UUID, imageData: Data, audioData: Data, content: [String : String])) -> Void)?
 
     public init(
         query: String,
-        mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?
+        mediaProvider: (@concurrent () async throws -> (imageURL: URL, audioURL: URL, videoTitle: String, sentence: String?)?)?,
+        miningHistorySaver: (((sentence: String, clozeOffset: Int?, title: String, imageExtension: String, formatID: UUID, imageData: Data, audioData: Data, content: [String : String])) -> Void)? = nil
     ) {
         self.query = query
         self.mediaProvider = mediaProvider
+        self.miningHistorySaver = miningHistorySaver
     }
 
     public var body: some View {
@@ -57,6 +60,7 @@ public struct DictionarySearchPanel: View {
                         documentTitle: nil,
                         clearSelection: popup.clearSelection,
                         mediaProvider: mediaProvider,
+                        miningHistorySaver: miningHistorySaver,
                         onTextSelected: { selection in
                             if let index = popups.firstIndex(where: { $0.id == popupID }) {
                                 closeChildPopups(parent: index)
@@ -105,17 +109,32 @@ public struct DictionarySearchPanel: View {
                     if let mediaProvider {
                         if let media = try? await mediaProvider(),
                            let audioData = try? Data(contentsOf: media.audioURL, options: .mappedIfSafe) {
-                            return await AnkiManager.shared.addNote(
-                                content: minedContent,
-                                context: MiningContext(
-                                    sentence: media.sentence ?? "",
-                                    clozeOffset: nil,
-                                    documentTitle: media.videoTitle,
-                                    coverURL: media.imageURL,
-                                    sasayakiAudioData: audioData
-                                ),
-                                formatId: formatId
-                            )
+                            if let miningHistorySaver, !AnkiManager.shared.useAnkiConnect {
+                                if let imageData = try? Data(contentsOf: media.imageURL, options: .mappedIfSafe) {
+                                    miningHistorySaver((
+                                        sentence: media.sentence ?? "",
+                                        clozeOffset: nil,
+                                        title: media.videoTitle,
+                                        imageExtension: media.imageURL.pathExtension,
+                                        formatID: formatId,
+                                        imageData: imageData,
+                                        audioData: audioData,
+                                        content: minedContent
+                                    ))
+                                }
+                            } else {
+                                return await AnkiManager.shared.addNote(
+                                    content: minedContent,
+                                    context: MiningContext(
+                                        sentence: media.sentence ?? "",
+                                        clozeOffset: nil,
+                                        documentTitle: media.videoTitle,
+                                        coverURL: media.imageURL,
+                                        sasayakiAudioData: audioData
+                                    ),
+                                    formatId: formatId
+                                )
+                            }
                         }
                         return false
                     }
