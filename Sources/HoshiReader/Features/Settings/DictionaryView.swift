@@ -9,7 +9,7 @@
 import UniformTypeIdentifiers
 import SwiftUI
 
-struct DictionaryView: View {
+public struct DictionaryView: View {
     @Environment(UserConfig.self) private var userConfig
     @State private var dictionaryManager = DictionaryManager.shared
     @State private var isImporting = false
@@ -45,7 +45,9 @@ struct DictionaryView: View {
         }
     }
     
-    var body: some View {
+    public init() {}
+    
+    public var body: some View {
         List {
             Section {
                 Button {
@@ -114,9 +116,11 @@ struct DictionaryView: View {
             }
             
             Section {
+                /*
                 Toggle(isOn: Bindable(userConfig).dictionaryTabDefault) {
                     Text("Default to Dictionary Tab", tableName: "Dictionaries")
                 }
+                 */
                 NavigationLink {
                     DictionarySettingsView()
                 } label: {

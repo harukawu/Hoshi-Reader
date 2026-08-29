@@ -9,14 +9,16 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct AudioView: View {
+public struct AudioView: View {
     @Environment(UserConfig.self) var userConfig
     @State private var nameInput = ""
     @State private var urlInput = ""
     @State private var isImporting = false
     @State private var importedSize: String?
     
-    var body: some View {
+    public init() {}
+    
+    public var body: some View {
         @Bindable var userConfig = userConfig
         List {
             Section("Sources") {

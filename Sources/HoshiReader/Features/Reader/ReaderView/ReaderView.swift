@@ -696,7 +696,7 @@ struct ReaderView: View {
         .sheet(item: $viewModel.activeSheet) { item in
             switch item {
             case .appearance:
-                AppearanceView(userConfig: userConfig, showDismiss: true)
+                AppearanceView(showDismiss: true)
                     .presentationDetents([.medium])
                     .preferredColorScheme(readerTheme)
             case .contents:

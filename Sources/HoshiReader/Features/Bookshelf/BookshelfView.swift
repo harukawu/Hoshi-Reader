@@ -172,7 +172,7 @@ struct BookshelfView: View {
                         case .anki:
                             AnkiView()
                         case .appearance:
-                            AppearanceView(userConfig: userConfig, showDismiss: false)
+                            AppearanceView(showDismiss: false)
                         case .advanced:
                             AdvancedView()
                         case .about:

@@ -9,9 +9,9 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct AppearanceView: View {
-    let userConfig: UserConfig
+public struct AppearanceView: View {
     let showDismiss: Bool
+    @Environment(UserConfig.self) var userConfig
     @Environment(\.dismiss) var dismiss
     @State private var isImportingFont = false
     @State private var importedFonts: [String] = []
@@ -19,7 +19,11 @@ struct AppearanceView: View {
     @State private var showingDeleteConfirmation = false
     @State private var fontToDelete: String? = nil
     
-    var body: some View {
+    public init(showDismiss: Bool) {
+        self.showDismiss = showDismiss
+    }
+    
+    public var body: some View {
         @Bindable var userConfig = userConfig
         let fontSelection = Binding<String>(
             get: { userConfig.selectedFont },
@@ -44,6 +48,7 @@ struct AppearanceView: View {
         )
         NavigationStack {
             List {
+                /*
                 Section("Theme") {
                     Picker("Appearance", selection: $userConfig.theme) {
                         ForEach(Themes.allCases, id: \.self) { mode in
@@ -68,8 +73,10 @@ struct AppearanceView: View {
                         ColorPicker("Info Color", selection: $userConfig.customInfoColor)
                     }
                 }
+                 */
                 
                 Section("Text") {
+                    /*
                     HStack {
                         Text("Text Orientation")
                         Spacer()
@@ -80,6 +87,7 @@ struct AppearanceView: View {
                         .pickerStyle(.segmented)
                         .frame(width: 100)
                     }
+                     */
                     
                     HStack {
                         Picker("Font", selection: fontSelection) {
@@ -151,6 +159,7 @@ struct AppearanceView: View {
                             .labelsHidden()
                     }
                     
+                    /*
                     HStack {
                         Text("Hide Furigana")
                         Spacer()
@@ -162,8 +171,10 @@ struct AppearanceView: View {
                         .pickerStyle(.segmented)
                         .frame(width: 200)
                     }
+                     */
                 }
                 
+                /*
                 Section("Layout") {
                     HStack {
                         Text("Mode")
@@ -289,6 +300,7 @@ struct AppearanceView: View {
                         Toggle("Show Sasayaki Toggle", isOn: $userConfig.readerShowSasayakiToggle)
                     }
                 }
+                 */
                 
                 Section("Popup") {
                     VStack {

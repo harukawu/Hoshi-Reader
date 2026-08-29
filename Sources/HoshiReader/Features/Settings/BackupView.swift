@@ -10,7 +10,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 import ZIPFoundation
 
-struct BackupView: View {
+public struct BackupView: View {
     @State private var isExporting = false
     @State private var isImporting = false
     @State private var isImportingTtu = false
@@ -21,8 +21,11 @@ struct BackupView: View {
     @State private var errorMessage = ""
     @State private var showError = false
     
-    var body: some View {
+    public init() {}
+    
+    public var body: some View {
         List {
+            /**
             Section("Books") {
                 Button("Backup") {
                     backupFolder(folder: "Books")
@@ -40,6 +43,7 @@ struct BackupView: View {
                     restoreFolder(from: url, to: target)
                 }
             }
+             */
             
             Section {
                 Button("Backup") {
@@ -55,6 +59,7 @@ struct BackupView: View {
                 Text("Restoring will overwrite the current collection.")
             }
             
+            /**
             Section {
                 Button("Export") {
                     exportTtuBookData()
@@ -75,6 +80,7 @@ struct BackupView: View {
                     importTtuBookData(from: url)
                 }
             }
+             */
         }
         .fileMover(isPresented: $isExporting, file: exportURL) { result in
             switch result {
