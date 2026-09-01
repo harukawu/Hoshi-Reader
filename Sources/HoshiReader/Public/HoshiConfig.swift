@@ -8,17 +8,27 @@
 
 import SwiftUI
 
-private struct HoshiConfigModifier: ViewModifier {
+struct HoshiConfig {
     static let config = UserConfig()
+}
+
+private struct ObserveAudioToggleChangeModifier: ViewModifier {
+    @State var userConfig = HoshiConfig.config
     
     func body(content: Content) -> some View {
         content
-            .environment(Self.config)
+            .onChange(of: userConfig.enableLocalAudio) { _, _ in
+                LocalFileServer.shared.setAudioServer(enabled: userConfig.enableLocalAudio)
+            }
     }
 }
 
 public extension View {
     func hoshiConfigEnvironment() -> some View {
-        modifier(HoshiConfigModifier())
+        environment(HoshiConfig.config)
+    }
+    
+    func observeLocalAudioToggleChange() -> some View {
+        modifier(ObserveAudioToggleChangeModifier())
     }
 }

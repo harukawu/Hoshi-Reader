@@ -16,7 +16,7 @@ import UIKit
 class LocalFileServer {
     static let shared = LocalFileServer()
     
-    static let port: UInt16 = 8765
+    static let port: UInt16 = 8773
     static let localAudioPath = "Audio/android.db"
     static let localAudioURL = "http://localhost:\(port)/localaudio/get/?term={term}&reading={reading}"
     
